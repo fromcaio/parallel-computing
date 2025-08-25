@@ -1,0 +1,1 @@
+Anotações computação paralela
