@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include "ipadress.h"
 
 int main(int argc, char** argv) {
     // Initialize the MPI environment
@@ -20,9 +22,11 @@ int main(int argc, char** argv) {
     int name_len;
     MPI_Get_processor_name(processor_name, &name_len);
 
-    // Print off a hello world message
-    printf("Hello world from processor %s, rank %d out of %d processors\n",
-           processor_name, world_rank, world_size);
+    char ip[INET_ADDRSTRLEN];
+    get_ip_address(ip, sizeof(ip));
+
+    printf("Hello from rank %d/%d on processor %s (%s)\n",
+        world_rank, world_size, processor_name, ip);
     
     char hostname2[256];
     if (gethostname(hostname2, sizeof(hostname2)) == 0) {
