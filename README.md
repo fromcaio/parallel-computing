@@ -95,9 +95,10 @@ Makefile        # Build configuration
 ## ⚙️ Build & Run Instructions
 
 1. **Enter the project folder:**
+
    ```bash
    cd project-1-sieve-mpi/
-````
+    ```
 
 2. **Compile the project:**
 
