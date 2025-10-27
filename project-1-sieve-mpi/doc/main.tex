@@ -20,7 +20,6 @@
 	% subsection=TITLE,
 	% -- Opções do pacote Babel --
 	english,   % Idioma adicional para hifenização
-	brazil     % O último idioma é o principal do documento
 ]{undergrad_thesis}
 
 %% ===================================================================================
@@ -190,6 +189,9 @@
 % \end{simbolos}
 % \cleardoublepage
 
+\renewcommand{\contentsname}{Summary}
+\renewcommand{\chaptername}{Chapter}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{\chaptername\ \thechapter.\ #1}}
 % --- Sumário ---
 \pdfbookmark[0]{\contentsname}{toc}
 \tableofcontents*
@@ -207,7 +209,7 @@
 \include{chapters/03_methodology}
 \include{chapters/04_development}
 \include{chapters/05_results}
-\include{chapters/06_conclusion}
+% \include{chapters/06_conclusion}
 
 % ----------------------------------------------------------
 % -- ELEMENTOS PÓS-TEXTUAIS
@@ -217,10 +219,10 @@
 
 % --- Referências ---
 % O estilo 'abnt-num' cria citações numéricas. Para autor-data, use 'abnt-alf'.
-\bibliographystyle{abnt-num}
+% \bibliographystyle{abnt-num}
 % O arquivo .bib contendo suas referências
 % [A FAZER: Adicione suas referências ao arquivo 'references.bib']
-\bibliography{references}
+% \bibliography{references}
 
 % --- Apêndices (Opcional) ---
 % [A FAZER: Descomente se você tiver apêndices]

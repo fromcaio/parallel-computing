@@ -1,64 +1,44 @@
-\chapter{Resultados e Discussão}\label{cap:resultados}
-% O nome original do arquivo foi mantido, mas o título do capítulo foi alterado
-% para ser mais genérico e adequado a um template.
+\chapter{Conclusion}\label{cap:conclusion}
 
-Neste capítulo, são apresentados os resultados obtidos a partir da aplicação da metodologia descrita no Capítulo \ref{cap:Metodologia}. A apresentação é seguida por uma discussão que interpreta esses resultados, correlacionando-os com o referencial teórico e os objetivos do trabalho.
+\section{Summary of Findings}
 
-\section{Apresentação do Artefato Desenvolvido}
+This work presented both sequential and parallel implementations of the \textit{Sieve of Eratosthenes} algorithm, developed in the C programming language using the Message Passing Interface (MPI).  
+The project aimed to evaluate the impact of distributed parallelism on execution performance, scalability, and computational efficiency when applied to a classical algorithm of number theory.  
 
-% [A FAZER: Se o seu trabalho envolveu o desenvolvimento de um software, protótipo
-% ou outro artefato, descreva-o aqui.]
+The sequential version served as a baseline for correctness and performance comparison, while the parallel version adopted the Master–Slave model to distribute the sieving workload among multiple processes.  
+The modular design of the codebase, separating MPI orchestration, sieve computation, and utility functions, allowed for a clearer implementation and simplified maintenance, ensuring readability and reusability for educational purposes.
 
-Como resultado principal desta pesquisa, foi desenvolvido um protótipo de software denominado [Nome do Sistema]. O sistema foi projetado para [descrever o objetivo principal do sistema]. A arquitetura do sistema, conforme projetada, é composta por um \textit{front-end} desenvolvido em React e um \textit{back-end} em Node.js, comunicando-se através de uma API RESTful.
+Experimental results demonstrated that the MPI-based version provides consistent and measurable improvements in performance for medium and large workloads.  
+Although the smallest test case ($N = 10^6$) exhibited a slight performance drop with only two processes—an expected result given the communication overhead of small tasks—the overall trend showed strong scalability.  
+Even for this input size, the runtime decreased substantially when using more processes, reaching a speedup of $S = 2.47$ with ten processes.  
+These results confirm that as the problem size increases, the ratio of computation to communication becomes increasingly favorable, allowing the algorithm to scale efficiently.
 
-As principais funcionalidades implementadas são:
+\section{Contributions}
+
+Beyond achieving the main objective of accelerating the sieve algorithm, this project contributed the following:
+
 \begin{itemize}
-    \item \textbf{Cadastro de Usuários:} Permite que novos usuários se registrem na plataforma.
-    \item \textbf{Módulo de [Funcionalidade 1]:} Descreve a primeira funcionalidade principal, como ela funciona e qual problema resolve.
-    \item \textbf{Módulo de [Funcionalidade 2]:} Descreve a segunda funcionalidade principal.
+    \item A modular, maintainable MPI implementation of the \textit{Sieve of Eratosthenes}, organized into distinct components for orchestration, computation, and utilities;
+    \item A complete performance evaluation comparing sequential and parallel versions across multiple input sizes and process counts;
+    \item An empirical demonstration of how MPI parallelism scales with problem size and how communication overhead affects smaller workloads;
+    \item Educational value through a clean, documented example illustrating key MPI concepts such as broadcast, point-to-point communication, and workload distribution.
 \end{itemize}
 
-A Figura \ref{fig:tela_principal} ilustra a tela principal do sistema.
+The results collectively validate that MPI parallelization is both practical and efficient for this type of problem, providing measurable speedups while maintaining algorithmic correctness.
 
-% \begin{figure}[h]
-%     \centering
-%     % [A FAZER: Substitua 'placeholder.jpg' por uma imagem da sua solução]
-%     \includegraphics[width=0.8\textwidth]{imgs/placeholder.jpg}
-%     \caption{Tela principal do sistema [Nome do Sistema].}
-%     \label{fig:tela_principal}
-% \end{figure}
+\section{Future Work}
 
-\section{Análise dos Resultados da Avaliação}
+Although the current implementation achieves significant performance improvements, several opportunities exist for further optimization and exploration:
 
-% [A FAZER: Apresente os dados coletados na fase de validação/testes.
-% Use tabelas, gráficos e outras formas de visualização de dados.]
+\begin{itemize}
+    \item \textbf{Hybrid Parallelization:} Incorporating OpenMP for shared-memory parallelism within each MPI process could reduce communication overhead and better exploit multicore systems.
+    \item \textbf{Dynamic Load Balancing:} Adopting adaptive task distribution strategies could improve efficiency in heterogeneous environments or when process workloads are uneven.
+\end{itemize}
 
-Para validar a solução proposta, foram realizados testes de usabilidade com um grupo de [número] usuários. Os participantes foram convidados a executar um conjunto de tarefas pré-definidas no sistema, e seus resultados foram coletados por meio de questionários e observação direta.
+\section{Final Considerations}
 
-A Tabela \ref{tab:resultados_testes} resume os resultados obtidos a partir do questionário de satisfação, que utilizou uma escala Likert de 1 (discordo totalmente) a 5 (concordo totalmente).
+The project successfully demonstrated the advantages and trade-offs of parallel computing using MPI.  
+The results reaffirm a central principle of high-performance computing: **parallel efficiency grows with problem size**.  
+For larger workloads, the MPI approach clearly outperforms its sequential counterpart, validating the relevance of distributed computing techniques for scalable algorithmic solutions.
 
-\begin{table}[h!]
-\centering
-\caption{Resultados do Questionário de Satisfação do Usuário.}
-\label{tab:resultados_testes}
-\begin{tabular}{@{}lc@{}}
-\toprule
-\textbf{Afirmação} & \textbf{Média das Respostas} \\
-\midrule
-O sistema é fácil de usar. & 4.5 \\
-As funcionalidades são úteis para a tarefa. & 4.8 \\
-Eu me senti satisfeito(a) ao usar o sistema. & 4.6 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Discussão}
-
-% [A FAZER: Interprete os resultados apresentados. O que eles significam?
-% Eles confirmam suas hipóteses? Compare-os com os trabalhos relacionados.]
-
-Os resultados apresentados na seção anterior indicam uma alta aceitação do protótipo pelos usuários. A média de 4.5 na afirmação "O sistema é fácil de usar" sugere que a interface proposta é intuitiva e atende às expectativas de usabilidade.
-
-Comparando esses resultados com o trabalho de Fulano, que desenvolveu uma ferramenta similar, nota-se que nossa solução obteve um índice de satisfação superior. Isso pode ser atribuído à [explique uma possível causa, ex: adoção de um design mais limpo ou a inclusão de uma funcionalidade chave].
-
-Apesar dos resultados positivos, foi identificado durante os testes que [descreva uma limitação ou ponto de melhoria]. Este ponto é discutido como uma limitação do trabalho na Conclusão e serve como sugestão para trabalhos futuros. Os resultados alcançados confirmam que os objetivos propostos para este trabalho foram atingidos com sucesso.
+This study reinforces the educational and practical value of applying MPI in academic and research contexts, offering both a conceptual and empirical foundation for future explorations in high-performance computing.

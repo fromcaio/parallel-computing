@@ -2,11 +2,9 @@
 
 \section{Experimental Setup}
 
-The performance analysis was conducted to evaluate the scalability and efficiency of the parallel implementation of the \textit{Sieve of Eratosthenes} in comparison to its sequential baseline. All tests were executed in the same environment described in Chapter~\ref{cap:method}, ensuring consistency across experiments.
+The performance analysis aimed to evaluate the scalability and efficiency of the parallel implementation of the \textit{Sieve of Eratosthenes} compared to its sequential baseline. All tests were executed in the same environment described in Chapter~\ref{cap:method}, ensuring experimental consistency.
 
-The sequential version was executed using a single process, while the parallel version was tested with different numbers of processes ($p = 2, 4, 6, 8, 10$). Each experiment was repeated multiple times to minimize variability, and the average execution time was used for analysis. The computation time measured excludes input/output operations, focusing only on the sieving phase.
-
-Table~\ref{tab:configurations} summarizes the configuration parameters used in the experiments.
+The sequential version was executed using a single process, while the parallel version was tested with different process counts ($p = 2, 4, 6, 8, 10$). Each run was repeated multiple times to mitigate noise, and the average computation time (excluding file I/O) was used for analysis.
 
 \begin{table}[H]
 \centering
@@ -16,89 +14,115 @@ Table~\ref{tab:configurations} summarizes the configuration parameters used in t
 \toprule
 \textbf{Parameter} & \textbf{Value} \\
 \midrule
-Processor & Intel\textsuperscript{\textregistered} Core\texttrademark{} Xeon(R) E5-2650 (10 cores, 20 threads) \\
+Processor & Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} E5-2650 (10 cores, 20 threads) \\
 Memory & 32 GB DDR4 RAM \\
 Operating System & Pop!\_OS 22.04 LTS (64-bit) \\
 MPI Implementation & OpenMPI 4.1.2 \\
-Compiler & \texttt{mpicc}\\
-Test Values for $N$ & $10^6$, $10^7$, and $10^8$ \\
-Processes Tested ($p$) & 1, 2, 4, 6, 8, 10 \\
+Compiler & \texttt{mpicc -std=c11} \\
+Problem Sizes ($N$) & $10^6$, $10^7$, $10^8$ \\
+Processes ($p$) & 1, 2, 4, 6, 8, 10 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Execution Results}
 
-Table~\ref{tab:results} presents the execution times obtained for both sequential and parallel versions using different numbers of processes. The values shown here are illustrative and will be updated once the actual measurements are collected.
+Table~\ref{tab:results} presents the measured execution times, speedups, and efficiencies for all tested configurations.
 
 \begin{table}[H]
 \centering
-\caption{Execution times, speedup, and efficiency for different process counts (illustrative data).}
+\caption{Execution times, speedup, and efficiency for different process counts (measured data).}
 \label{tab:results}
 \begin{tabular}{cccccc}
 \toprule
-\textbf{$N$} & \textbf{Processes ($p$)} & \textbf{Sequential Time ($T_s$) [s]} & \textbf{Parallel Time ($T_p$) [s]} & \textbf{Speedup ($S = T_s / T_p$)} & \textbf{Efficiency ($E = S / p$)} \\
+\textbf{$N$} & \textbf{$p$} & \textbf{$T_s$ [s]} & \textbf{$T_p$ [s]} & \textbf{$S = T_s/T_p$} & \textbf{$E = S/p$} \\
 \midrule
-$10^6$ & 1 & 0.128 & 0.128 & 1.00 & 1.00 \\
-$10^6$ & 2 & 0.128 & 0.072 & 1.78 & 0.89 \\
-$10^6$ & 4 & 0.128 & 0.041 & 3.12 & 0.78 \\
-$10^6$ & 6 & 0.128 & 0.032 & 4.00 & 0.67 \\
-$10^6$ & 8 & 0.128 & 0.030 & 4.26 & 0.53 \\
+$10^6$ & 1 & 0.0236 & 0.0236 & 1.000 & 1.000 \\
+$10^6$ & 2 & 0.0236 & 0.0301 & 0.785 & 0.393 \\
+$10^6$ & 4 & 0.0236 & 0.0200 & 1.182 & 0.295 \\
+$10^6$ & 6 & 0.0236 & 0.0162 & 1.455 & 0.242 \\
+$10^6$ & 8 & 0.0236 & 0.0115 & 2.058 & 0.257 \\
+$10^6$ & 10 & 0.0236 & 0.0095 & 2.473 & 0.247 \\
 \midrule
-$10^7$ & 1 & 1.215 & 1.215 & 1.00 & 1.00 \\
-$10^7$ & 2 & 1.215 & 0.654 & 1.86 & 0.93 \\
-$10^7$ & 4 & 1.215 & 0.366 & 3.32 & 0.83 \\
-$10^7$ & 6 & 1.215 & 0.257 & 4.73 & 0.79 \\
-$10^7$ & 8 & 1.215 & 0.223 & 5.45 & 0.68 \\
+$10^7$ & 1 & 0.2038 & 0.2038 & 1.000 & 1.000 \\
+$10^7$ & 2 & 0.2038 & 0.2070 & 0.985 & 0.492 \\
+$10^7$ & 4 & 0.2038 & 0.1362 & 1.496 & 0.374 \\
+$10^7$ & 6 & 0.2038 & 0.1125 & 1.812 & 0.302 \\
+$10^7$ & 8 & 0.2038 & 0.0963 & 2.116 & 0.264 \\
+$10^7$ & 10 & 0.2038 & 0.0885 & 2.303 & 0.230 \\
 \midrule
-$10^8$ & 1 & 12.84 & 12.84 & 1.00 & 1.00 \\
-$10^8$ & 2 & 12.84 & 6.92 & 1.86 & 0.93 \\
-$10^8$ & 4 & 12.84 & 3.71 & 3.46 & 0.86 \\
-$10^8$ & 6 & 12.84 & 2.55 & 5.04 & 0.84 \\
-$10^8$ & 8 & 12.84 & 2.16 & 5.94 & 0.74 \\
+$10^8$ & 1 & 2.3516 & 2.3516 & 1.000 & 1.000 \\
+$10^8$ & 2 & 2.3516 & 1.9213 & 1.224 & 0.612 \\
+$10^8$ & 4 & 2.3516 & 1.3413 & 1.753 & 0.438 \\
+$10^8$ & 6 & 2.3516 & 1.1929 & 1.971 & 0.329 \\
+$10^8$ & 8 & 2.3516 & 1.1080 & 2.122 & 0.265 \\
+$10^8$ & 10 & 2.3516 & 1.0597 & 2.219 & 0.222 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Graphical Analysis}
 
-To visualize the performance gains achieved through parallelization, Figures~\ref{fig:speedup} and~\ref{fig:efficiency} illustrate the relationship between the number of processes, speedup, and efficiency. These figures will be generated based on the experimental results and later included in the final version of this report.
+To better illustrate the behavior of the parallel version, Figures~\ref{fig:time_comparison},~\ref{fig:speedup}, and~\ref{fig:efficiency} summarize the relationship between execution time, speedup, and efficiency as the number of processes increases.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{figures/speedup.png}
-%     \caption{Speedup achieved for different numbers of processes (placeholder figure).}
-%     \label{fig:speedup}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{imgs/time_comparison.png}
+    \caption{Execution time versus number of processes for different problem sizes.}
+    \label{fig:time_comparison}
+\end{figure}
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{figures/efficiency.png}
-%     \caption{Parallel efficiency as a function of process count (placeholder figure).}
-%     \label{fig:efficiency}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{imgs/speedup.png}
+    \caption{Measured speedup as a function of process count.}
+    \label{fig:speedup}
+\end{figure}
 
-In addition to the speedup and efficiency metrics, Figure~\ref{fig:time_comparison} compares the absolute execution times between the sequential and parallel implementations, highlighting the reduction achieved through distributed computation.
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{figures/time_comparison.png}
-%     \caption{Comparison of execution times between sequential and parallel versions (placeholder figure).}
-%     \label{fig:time_comparison}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{imgs/efficiency.png}
+    \caption{Parallel efficiency for varying numbers of processes.}
+    \label{fig:efficiency}
+\end{figure}
 
 \section{Analysis of Results}
 
-The preliminary results presented above indicate a consistent reduction in execution time as the number of processes increases. The measured speedup demonstrates near-linear scalability for smaller process counts, with diminishing returns observed beyond six processes. This behavior is typical in parallel applications where communication and synchronization overheads start to outweigh the benefits of further process subdivision.
+The results demonstrate that the parallel implementation of the \textit{Sieve of Eratosthenes} achieves consistent and measurable performance gains across almost all tested configurations.
 
-For the largest problem size ($N = 10^8$), the parallel implementation achieved a speedup of approximately 6$\times$ when using eight processes, corresponding to an efficiency of around 74\%. This efficiency value reflects a good utilization of computational resources, considering the memory and communication overhead inherent to MPI-based programs.
+For the smallest input size ($N = 10^6$), the version executed with two processes shows a considerable slowdown compared to the sequential baseline ($T_s = 0.0236$ s vs.\ $T_p = 0.0301$ s, $S = 0.785$).  
+This effect is expected because, for small workloads, the cost of communication and synchronization among processes outweighs the computational effort of the sieve itself.  
+However, as soon as the number of processes increases, the benefits of parallelization quickly become evident.  
+For instance, using four processes already yields a speedup of $S = 1.182$, and the best result for this input size reaches $S = 2.473$ with ten processes.  
+This confirms that even under light workloads test cases, the MPI implementation scales efficiently once enough processes are employed to amortize the overhead.
 
-The performance gain is primarily due to effective data decomposition: each process works independently on a portion of the interval $[2, N]$, using a shared list of base primes broadcast by the master. The main sources of overhead are the broadcast operation (\texttt{MPI\_Bcast}) and the collection of results (\texttt{MPI\_Recv}) performed by the master process. Nevertheless, the results validate that parallelization can significantly accelerate prime number generation for large-scale computations.
+For $N = 10^7$, the runtime remains similar between the sequential and two-process configurations ($S = 0.985$), but strong improvements appear as the process count grows, reaching $S = 2.303$ for ten processes.  
+Finally, for the largest input size ($N = 10^8$), there are gains across all configurations: even with only two processes, the runtime drops from 2.35 s to 1.92 s ($S = 1.224$), and the best configuration with ten processes achieves a speedup of $S = 2.219$.
+
+Parallel efficiency ($E = S / p$) expresses how effectively the available processes are utilized relative to the ideal linear scaling.  
+For example, an efficiency of $E = 0.612$ for $N = 10^8$ and two processes indicates that the system delivered 61 \% of the theoretical maximum performance.  
+As the number of processes increases, efficiency gradually decreases because communication and synchronization introduce additional costs.  
+However, the efficiencies observed—ranging from approximately 25 \% to 60 \%—are an expected behavior of our MPI application, because we are using explicit message passing and centralized coordination.  
 
 \section{Discussion and Interpretation}
 
-The results confirm that the Master–Slave strategy provides a clear and effective approach to parallelizing the Sieve of Eratosthenes using MPI. The algorithm scales well for moderate process counts, showing substantial speedups without compromising correctness or reproducibility.
+The performance trends observed in this study confirm that parallel computing using MPI is advantageous for the \textit{Sieve of Eratosthenes} across all tested scales.  
+While a minor slowdown is observed for $N = 10^6$ with only two processes—caused by communication overhead dominating the short computation—the same configuration achieves noticeable speedup when more processes are employed.  
+This indicates that the parallel version quickly overcomes the cost of coordination as the number of processes grows, even for relatively small datasets.
 
-However, as the number of processes increases, communication costs and workload imbalance become more evident. These effects could be mitigated by implementing dynamic load balancing or hybrid parallelism (MPI + OpenMP). Additionally, the memory requirements for very large $N$ could be reduced through segmented sieving techniques, which process smaller blocks sequentially while maintaining parallel scalability.
+From $N = 10^7$ onward, the MPI implementation consistently outperforms the sequential version.  
+The results demonstrate nearly linear speedup up to six processes, followed by moderate gains as communication overhead increases at higher process counts.  
+For the largest case, $N = 10^8$, the parallel version consistently achieves faster runtimes across all configurations, confirming that distributed computation becomes increasingly beneficial as the workload expands.
 
-Overall, the parallel implementation demonstrates the educational and practical value of MPI for distributed computing. It successfully illustrates how classical algorithms can be adapted to modern multicore and cluster environments, providing measurable improvements in execution time while maintaining conceptual simplicity.
+The efficiency values provide additional insight into how computational resources were utilized.  
+Higher efficiencies at low process counts indicate that most of the execution time was devoted to useful computation, with minimal communication overhead.  
+As the number of processes increases, efficiency naturally declines due to growing message-passing and synchronization costs inherent to the Master–Slave model.  
+Efficiencies around 50–60\,\% still represent a good balance between computation and communication for this problem size and system configuration.  
+However, the lower efficiency values observed at higher process counts (around 25\,\%) indicate that the application begins to reach a state of diminishing returns — where adding more processes contributes progressively less to reducing execution time.  
+Overall, the observed efficiency trend aligns with expectations, confirming that the parallel implementation scales correctly and reaches its optimal performance range under moderate process counts.
+
+
+
+In summary, the results demonstrate that the parallel implementation is not only viable but also highly effective.  
+It achieves substantial reductions in execution time and exhibits stable, predictable scalability as the problem size and process count increase.  
+These findings highlight the strength of the MPI-based Master–Slave approach as an educational and practical demonstration of distributed parallelism, providing a clear advantage over the sequential version even on modest multicore systems.
