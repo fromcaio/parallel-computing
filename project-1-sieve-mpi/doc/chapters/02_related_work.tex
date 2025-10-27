@@ -1,0 +1,39 @@
+\chapter{Theoretical Background}\label{cap:theory}
+
+\section{The Sieve of Eratosthenes}
+
+The \textit{Sieve of Eratosthenes} is one of the oldest and most well-known algorithms for finding all prime numbers up to a given integer limit $N$. Its fundamental idea is based on iteratively eliminating the multiples of each discovered prime number, leaving only the primes unmarked at the end of the process. Despite its simplicity, the algorithm remains an important pedagogical and practical reference for computational number theory.
+
+The algorithm operates on a logical array that represents all integers from 2 to $N$. Initially, all entries are marked as \textit{potential primes}. The algorithm then iterates through the array, starting with the first unmarked number (which is prime), and proceeds to mark all its multiples as non-prime. This process continues until the square root of $N$ is reached, since any composite number greater than $\sqrt{N}$ would already have been marked as a multiple of a smaller prime.
+
+From a computational perspective, the Sieve of Eratosthenes has a time complexity of $O(n \log(\log{n}))$ and a space complexity of $O(n)$, making it efficient for generating prime numbers over a wide range of values. However, for very large limits, the algorithm becomes computationally expensive due to its memory consumption and the sequential nature of the elimination process. Parallelization with MPI aims to solve both of these problems by distributing the memory footprint (the amount of memory that a process uses while running) and the computational work across multiple processing units, thereby reducing the overall execution time.
+
+\section{Parallel Computing Concepts}
+
+Parallel computing is a paradigm in which multiple tasks are executed simultaneously, aiming to reduce total computation time and improve efficiency. The main goal is to divide a problem into smaller subproblems that can be solved concurrently, combining their partial results to obtain the final output. This approach contrasts with sequential computing, where tasks are executed one after another on a single processor.
+
+The performance of a parallel algorithm is typically evaluated using the following metrics:
+\begin{itemize}
+    \item \textbf{Execution Time ($T$)}: The total time required to complete the computation.
+    \item \textbf{Speedup ($S$)}: The ratio between the sequential and parallel execution times, $S = T_s / T_p$, where $T_s$ is the sequential time and $T_p$ is the parallel time.
+    \item \textbf{Efficiency ($E$)}: A measure of how effectively the parallel resources are utilized, defined as $E = S / p$, where $p$ is the number of processes.
+\end{itemize}
+
+Parallel algorithms can be implemented under different models of computation, such as:
+\begin{itemize}
+    \item \textbf{Shared Memory}: All processes access a common memory space (e.g., OpenMP, Pthreads);
+    \item \textbf{Distributed Memory}: Each process maintains its own local memory, and communication occurs via explicit message passing (e.g., MPI);
+    \item \textbf{Hybrid Models}: A combination of both approaches, suitable for multicore clusters or supercomputers.
+\end{itemize}
+
+The design of a parallel algorithm involves key concepts such as \textit{data decomposition}, \textit{load balancing}, \textit{synchronization}, and \textit{communication overhead}. In the context of the Sieve of Eratosthenes, data decomposition can be achieved by dividing the range $[2, N]$ into subintervals, where each process independently marks the multiples of a shared set of base primes.
+
+\section{MPI and the Master–Slave Model}
+
+The \textit{Message Passing Interface} (MPI) is a standardized communication protocol widely used in parallel computing environments that operate under the distributed memory model. It provides a comprehensive set of functions for process management, point-to-point communication (such as \texttt{MPI\_Send} and \texttt{MPI\_Recv}), and collective operations (such as \texttt{MPI\_Bcast}, \texttt{MPI\_Gather}, and \texttt{MPI\_Reduce}). MPI programs typically begin with a call to \texttt{MPI\_Init} and end with \texttt{MPI\_Finalize}, ensuring proper initialization and termination of the communication environment.
+
+In the \textit{Master–Slave} (or \textit{Master–Worker}) model, one process—called the \textit{master}—coordinates the distribution of tasks among multiple \textit{slave} processes. The master is responsible for dividing the problem into subproblems, sending these tasks to the slaves, and later collecting the results for consolidation. Each slave performs computations independently and returns partial results to the master. This model is intuitive, straightforward to implement, and well-suited for problems that can be easily divided into independent data blocks, such as the Sieve of Eratosthenes.
+
+In the context of this project, the master process computes the prime numbers up to $\sqrt{N}$ sequentially, then broadcasts these \textit{base primes} to all slave processes using \texttt{MPI\_Bcast}. Each slave receives a distinct subrange of the interval $[2, N]$ and uses the base primes to mark the composite numbers within its local segment. Once all processes finish their local sieving, the slaves send their local lists of primes back to the master via \texttt{MPI\_Send}, where the results are merged and stored in the final output file.
+
+This approach not only reduces the total computation time but also demonstrates essential concepts of distributed computation—such as data partitioning, synchronization, and inter-process communication—making it an ideal case study for the application of MPI in parallel algorithm design.

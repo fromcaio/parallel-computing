@@ -1,0 +1,26 @@
+\chapter{Introduction}\label{cap:intro}
+
+\section{Context and Motivation}
+
+The search for efficient algorithms capable of leveraging the computational power of modern architectures is one of the main challenges in contemporary Computer Science. Among the classical problems of number theory, the identification of prime numbers stands out as a fundamental topic in mathematics, cryptography, and data analysis. The \textit{Sieve of Eratosthenes}, proposed more than two millennia ago, remains one of the simplest and most effective algorithms for generating prime numbers up to a given limit $N$.
+
+However, as the value of $N$ increases, the algorithm's computational cost grows considerably, requiring greater processing time and memory usage. This context motivates the study of parallel programming as a means of distributing computational workload among multiple processors, reducing execution time, and improving scalability. By dividing the problem into independent subranges, the algorithm can be executed concurrently, demonstrating the benefits of parallel computing in solving computationally intensive tasks.
+
+The Message Passing Interface (MPI) standard provides a powerful and portable framework for developing parallel applications that operate across multiple processes, potentially distributed over different cores or computers. This project applies MPI to the Sieve of Eratosthenes, implementing a Master–Slave parallel model that illustrates data decomposition, process communication, and result consolidation.
+
+\section{Objectives}
+
+\subsection{General Objective}
+
+The general objective of this work is to develop and analyze a parallel implementation of the \textit{Sieve of Eratosthenes} algorithm using the MPI standard, comparing its performance to a sequential baseline version written in the C programming language.
+
+\subsection{Specific Objectives}
+
+The specific objectives include:
+\begin{itemize}
+    \item Implement a correct and efficient sequential version of the sieve to serve as a baseline for comparison;
+    \item Design and implement a parallel version following the Master–Slave model using MPI;
+    \item Evaluate the execution time of both versions to compute speedup and efficiency metrics;
+    \item Analyze the scalability of the algorithm for different values of $N$ and varying numbers of processes;
+    \item Document the results and discuss the benefits and limitations of the parallel approach.
+\end{itemize}

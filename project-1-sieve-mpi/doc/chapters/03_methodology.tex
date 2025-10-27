@@ -1,0 +1,114 @@
+\chapter{Methodology and Implementation}\label{cap:method}
+
+\section{Development Environment}
+
+The implementation of both the sequential and parallel versions of the \textit{Sieve of Eratosthenes} was carried out using the C programming language, chosen for its low-level control, portability, and widespread use in high-performance computing. The Message Passing Interface (MPI) standard was used to enable parallel execution through message exchange between distributed processes.
+
+All source code was developed and tested in a GNU/Linux environment, specifically using the \textit{Pop!\_OS 22.04 LTS} distribution. Compilation was performed using the \texttt{gcc} and \texttt{mpicc} compilers, both supporting the C11 standard and the optimization flag \texttt{-O2} to balance performance and code readability.
+
+The experiments were executed on a multicore system with the following hardware configuration:
+\begin{itemize}
+    \item \textbf{Processor}: Intel\textsuperscript{\textregistered} Core\texttrademark{} i7-10750H (6 cores, 12 threads, 2.6\,GHz base frequency);
+    \item \textbf{Memory}: 16\,GB DDR4 RAM;
+    \item \textbf{Operating System}: Pop!\_OS 22.04 LTS (64-bit);
+    \item \textbf{MPI Implementation}: OpenMPI 4.1.5.
+\end{itemize}
+
+The choice of environment ensures reproducibility and compatibility with other POSIX-based systems commonly used in academic and research contexts.
+
+\section{Project Structure}
+
+The project was organized into a modular directory structure to improve clarity, maintainability, and integration with a standard \texttt{Makefile}. Each folder serves a specific purpose in the compilation and execution process. The structure is presented below:
+
+\begin{verbatim}
+project-root/
+|-- Makefile
+|-- doc/                  # Documentation and reports
+|-- bin/                  # Compiled binaries
+|-- obj/                  # Object (.o) and dependency (.d) files
+|-- lib/                  # External libraries (not used)
+`-- src/
+    |-- sieve.c           # Parallel MPI implementation (Master-Slave model)
+    |-- sieve_sequential.c  # Sequential baseline version
+    `-- include/            # Header files
+\end{verbatim}
+
+The \texttt{Makefile} automates the compilation of both versions through dedicated targets. The main commands available are:
+\begin{itemize}
+    \item \texttt{make} – Compiles the parallel MPI version (\texttt{bin/sieve});
+    \item \texttt{make sequential} – Compiles the sequential version (\texttt{bin/sieve\_seq});
+    \item \texttt{make clean} – Removes all binaries and object files.
+\end{itemize}
+
+This organization facilitates testing, reproducibility, and future extensions of the project, such as hybrid or OpenMP-based implementations.
+
+\section{Sequential Implementation}
+
+The sequential implementation serves as a correctness reference and a performance baseline for comparison with the parallel version. It was implemented in C using a direct representation of the classical \textit{Sieve of Eratosthenes} algorithm. The program receives an integer $N$ as a command-line argument and computes all prime numbers within the interval $[2, N]$.
+
+Internally, the algorithm allocates a boolean array of size $N + 1$, where each index represents a candidate number. Initially, all elements are set to \texttt{true}, except for 0 and 1, which are not prime. For each integer $p$ starting from 2 up to $\sqrt{N}$, if $p$ is still marked as prime, all its multiples are marked as composite. At the end of the process, all indices that remain marked as \texttt{true} correspond to prime numbers.
+
+To ensure fair performance measurement, execution time is recorded using the \texttt{clock()} function from the \texttt{time.h} library, considering only the computation phase (excluding file I/O). The list of primes is then written to a file named \texttt{primes-sequential.txt}, and a summary message is printed to the terminal showing the total number of primes found and the total computation time.
+
+The sequential implementation can be compiled and executed using the following commands:
+\begin{verbatim}
+make sequential
+./bin/sieve_seq 1000000
+\end{verbatim}
+
+An excerpt of the program output is shown below:
+
+\begin{verbatim}
+[Sequential] Computed 78498 primes up to N = 1000000
+[Sequential] Execution time (computation only): 0.127 seconds
+[Sequential] Output written to primes-sequential.txt
+\end{verbatim}
+
+This version guarantees algorithmic correctness and provides the basis for performance comparison with the parallel MPI implementation presented in the next section.
+
+\section{Parallel Implementation (MPI)}\label{sec:parallel}
+
+The parallel implementation extends the classical Sieve of Eratosthenes by introducing distributed computation through the Message Passing Interface (MPI). The main goal is to reduce execution time by dividing the problem into smaller subranges that can be processed concurrently by multiple processes. The implementation adopts the Master–Slave model, where one process acts as the coordinator (master) and the remaining processes perform the computation (slaves).
+
+In the parallel version, the program starts by initializing the MPI environment and determining the total number of processes (\texttt{world\_size}) and the rank of each process (\texttt{world\_rank}). The master process reads the input parameter $N$ and computes all prime numbers up to $\sqrt{N}$ sequentially. These primes are referred to as \textit{base primes} and are essential for sieving higher intervals. The list of base primes is then broadcast to all processes using \texttt{MPI\_Bcast} so that every process can mark multiples of these primes within its local subrange.
+
+The range $[2, N]$ is divided into nearly equal-sized subintervals, and each process is assigned one of these blocks. The slave processes receive their assigned intervals, perform local sieving independently, and identify prime numbers within their range. Once the computation is complete, each slave sends its list of primes back to the master process using \texttt{MPI\_Send}. The master then merges all partial results, compiles the final list of primes, and writes them to the file \texttt{primes.txt}. Execution time is measured using \texttt{MPI\_Wtime()}, and only the computational phase is considered in the measurement, excluding file I/O operations.
+
+To improve readability and maintainability, the parallel implementation was modularized into multiple source files according to their roles and responsibilities. The file structure is shown below.
+
+\begin{verbatim}
+src/
+|-- sieve_parallel.c     # Holds main() and MPI orchestration logic
+|-- sieve_core.c         # Contains the core parallel sieving algorithms
+|-- sieve_utils.c        # Utility functions: parsing, file I/O, and helpers
+|-- sieve_sequential.c   # Self contained sequential version
+|-- include/
+    |-- sieve.h          # Common header for all parallel related modules
+\end{verbatim}
+
+This modular architecture allows each component to focus on a single concern:
+\begin{itemize}
+    \item \textbf{MPI Orchestration} (\texttt{sieve\_parallel.c}): Manages process creation, data distribution, message passing, and result collection following the Master–Slave model.
+    \item \textbf{Sieve Core} (\texttt{sieve\_core.c}): Implements the core sieving algorithm used by both the master and the slaves, including base prime computation and local sieving routines.
+    \item \textbf{Utilities} (\texttt{sieve\_utils.c}): Provides helper functions for argument parsing, file output, memory allocation validation, and array initialization.
+\end{itemize}
+
+The common header file, \texttt{include/sieve.h}, centralizes shared definitions, constants, and function prototypes. This design enables cleaner interfaces between modules and makes the codebase easier to extend, for instance by adding support for hybrid OpenMP+MPI execution in future work.
+
+The modular structure also simplifies debugging and performance tuning. Each source file can be compiled and tested individually, while the Makefile handles the dependency resolution and links the modules into the final binary. The resulting executable can be built and executed using:
+
+\begin{verbatim}
+make
+mpirun -np 4 ./bin/sieve 1000000
+\end{verbatim}
+
+An example of typical output from the parallel version is shown below:
+
+\begin{verbatim}
+[Master] Using 4 processes
+[Master] Computed 78498 primes up to N = 1000000
+[Master] Execution time (computation only): 0.013813 seconds
+[Master] Output written to primes.txt
+\end{verbatim}
+
+% The modular implementation thus enhances the educational value of the project by clearly separating algorithmic computation, parallel coordination, and auxiliary operations. This organization provides a solid foundation for experimentation and performance analysis, discussed in Chapter~\ref{cap:analysis}.
