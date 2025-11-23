@@ -1,0 +1,70 @@
+\chapter{Methodology}\label{cap:methodology}
+
+\section{Development Environment}
+
+All code was written in C11 and compiled with \texttt{gcc} using the \texttt{-pthread} flag for the parallel build. The experiments will run on a multicore Linux system; exact hardware and OS details will be filled in after data collection (CPU model, core count, RAM, compiler version).
+
+\section{Project Structure}
+
+The repository mirrors the previous project layout, separating shared code and entry points:
+
+\begin{verbatim}
+project-2-game-of-life-pthreads/
+|-- Makefile
+|-- src/
+|   |-- game_of_life.c           # I/O + step kernel
+|   |-- game_of_life_sequential.c
+|   |-- game_of_life_pthreads.c
+|   `-- include/game_of_life.h
+|-- samples/                     # Input patterns
+`-- output/                      # Generated at runtime
+\end{verbatim}
+
+The Makefile exposes two main targets: \texttt{make} (parallel) and \texttt{make sequential}. Both binaries log execution time (computation only) and emit the final grid to \texttt{output/}.
+
+\section{Experimental Design}
+
+\subsection{Inputs}
+
+Inputs follow the required format: number of generations, grid dimensions, and a list of initially alive coordinates. Provided samples include a blinker, a block, and a glider; larger synthetic grids will be generated for benchmarking (placeholders for scripts and figures are included below).
+
+\subsection{Metrics}
+
+We will measure:
+\begin{itemize}
+    \item Execution time (computation only) for sequential and parallel versions;
+    \item Speedup $S = T_{seq} / T_{par}$;
+    \item Efficiency $E = S / p$, with $p$ threads.
+\end{itemize}
+
+\subsection{Timing and Exclusions}
+
+Timing uses \texttt{clock\_gettime(CLOCK\_MONOTONIC)} and excludes output file writing. Each run will be repeated (placeholder: number of repetitions to be set) to mitigate noise; averages and standard deviations will be reported.
+
+\subsection{Visualization Placeholders}
+
+Figures will be generated with Python to illustrate:
+\begin{itemize}
+    \item Evolution of selected patterns over a small number of generations;
+    \item Thread domain decomposition over the grid (row-block assignment);
+    \item Performance plots (execution time vs. threads; speedup vs. threads).
+\end{itemize}
+
+Example placeholder for a decomposition diagram:
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox{0.8\linewidth}{Placeholder: row-block domain decomposition figure (to be generated in Python).}}
+    \caption{(Placeholder) Row partitioning of the grid across threads.}
+    \label{fig:decomposition}
+\end{figure}
+
+\section{Execution Plan}
+
+\begin{enumerate}
+    \item Validate correctness on small patterns (blinker, block, glider) against expected states.
+    \item Collect timing data for multiple grid sizes (placeholder: e.g., $256\times256$, $512\times512$, $1024\times1024$) and generations (placeholder: 50--200).
+    \item Run with varying thread counts (1, 2, 4, 8, ... up to hardware limit).
+    \item Generate plots and evolution images using Python scripts (to be added).
+    \item Summarize results with speedup/efficiency tables and discuss bottlenecks.
+\end{enumerate}

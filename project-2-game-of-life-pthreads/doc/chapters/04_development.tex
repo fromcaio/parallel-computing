@@ -1,0 +1,45 @@
+\chapter{Implementation}\label{cap:development}
+
+\section{Data Structures and I/O}
+
+The grid is stored as a contiguous array of bytes to maximize spatial locality. A simple \texttt{Grid} struct holds dimensions and a pointer to the cell buffer. Two buffers (current/next) implement double-buffering to avoid read--write hazards during updates. Input parsing validates dimensions and coordinates, and outputs reuse the same format as the input.
+
+\section{Update Kernel}
+
+The core step iterates over assigned rows, counts eight neighbors, and writes the next state. The kernel is identical for both builds and lives in a shared module. Boundary checks clamp neighbor coordinates; no wrap-around is applied.
+
+\section{Sequential Version}
+
+The sequential binary drives the simulation loop, swapping buffers after each generation. Timing excludes file I/O, and results are written to \texttt{output/game\_of\_life\_seq\_<rows>x<cols>\_<gen>gen.txt}.
+
+\section{Parallel Version (Pthreads)}
+
+The parallel driver partitions rows into nearly equal blocks (handling remainders to balance work). Each thread receives its start/end rows, a shared pointer to the current/next buffers, and two barriers:
+\begin{itemize}
+    \item Compute barrier: ensures all threads finish writing their slice for generation $g$.
+    \item Swap barrier: synchronizes after the master thread swaps \texttt{current}/\texttt{next} pointers.
+\end{itemize}
+
+This results in two barrier synchronizations per generation, with no additional locks. Output files include the thread count and grid size: \texttt{output/game\_of\_life\_threads\_<t>t\_<rows>x<cols>\_<gen>gen.txt}.
+
+\section{Error Handling and Logging}
+
+Input validation checks negative dimensions and out-of-bounds coordinates. Failure paths free allocated buffers and report errors to \texttt{stderr}. Runtime logs print timing and output paths for reproducibility.
+
+\section{Visualization Placeholders}
+
+To aid explanation, placeholders are reserved for figures that will be generated later with Python scripts:
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox{0.8\linewidth}{Placeholder: Game of Life evolution sequence (to be generated in Python).}}
+    \caption{(Placeholder) Evolution of a glider over several generations.}
+    \label{fig:glider-evolution}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox{0.8\linewidth}{Placeholder: Cache-friendly memory layout illustration (to be generated in Python).}}
+    \caption{(Placeholder) Contiguous row-major storage of the grid.}
+    \label{fig:memory-layout}
+\end{figure}

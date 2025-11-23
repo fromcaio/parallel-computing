@@ -1,0 +1,53 @@
+\chapter{Results and Analysis}\label{cap:results}
+
+\section{Execution Environment}
+
+Hardware and software details will be completed after experiments (CPU model, core count, RAM, OS, compiler version). All runs will be performed on an otherwise idle machine to reduce noise.
+
+\section{Workloads}
+
+Benchmarks will use a mix of small correctness patterns (blinker, block, glider) and larger synthetic grids. Planned sizes (subject to adjustment): $256\times256$, $512\times512$, and $1024\times1024$ with 50--200 generations.
+
+\section{Performance Metrics}
+
+For each workload and thread count $p$, we will report:
+\begin{itemize}
+    \item Computation time (median/average over multiple runs);
+    \item Speedup $S = T_{seq} / T_{par}$;
+    \item Efficiency $E = S / p$.
+\end{itemize}
+
+\section{Placeholders for Tables and Figures}
+
+Tables of raw timings and derived metrics will be inserted here. Plots will be generated in Python; placeholders below reserve space in the document.
+
+\begin{table}[h]
+    \centering
+    \caption{(Placeholder) Execution time, speedup, and efficiency by grid size and thread count.}
+    \label{tab:timings}
+    \begin{tabular}{cccc}
+        \toprule
+        Grid & Threads & Time (s) & Speedup/Efficiency \\
+        \midrule
+        % To be filled with collected data
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox{0.8\linewidth}{Placeholder: plot of execution time vs. threads for multiple grid sizes (to be generated in Python).}}
+    \caption{(Placeholder) Execution time for sequential and parallel runs.}
+    \label{fig:exec-time}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox{0.8\linewidth}{Placeholder: speedup curve across thread counts (to be generated in Python).}}
+    \caption{(Placeholder) Speedup relative to the sequential baseline.}
+    \label{fig:speedup}
+\end{figure}
+
+\section{Preliminary Observations}
+
+We expect near-linear speedup for moderate thread counts until memory bandwidth and barrier overhead dominate. Small grids may show limited gains due to synchronization cost. Final discussion will be updated once measurements are available.

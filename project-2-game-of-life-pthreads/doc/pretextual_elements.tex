@@ -1,0 +1,113 @@
+%% ===================================================================================
+%% Elementos Pré-Textuais (pretextual_elements.tex)
+%% Versão: 2.2 (Corrigida)
+%%
+%% Este arquivo contém:
+%% - Folha de Aprovação
+%% - Dedicatória
+%% - Agradecimentos
+%% - Epígrafe
+%% - Resumo em Português
+%% - Resumo em Língua Estrangeira (ex: Inglês)
+%%
+%% Preencha, descomente ou remova as seções conforme sua necessidade.
+%% ===================================================================================
+
+
+% -----------------------------------------------------------------------------------
+% -- FOLHA DE APROVAÇÃO
+% -----------------------------------------------------------------------------------
+% NOTA: Este é um elemento obrigatório (ABNT NBR 14724:2011).
+% Você pode usar esta versão em texto para rascunhos. Após a defesa, é uma
+% prática comum escanear a página assinada e substituir todo o conteúdo do
+% ambiente 'folhadeaprovacao' por: \includegraphics[width=\textwidth]{caminho/para/pagina_assinada.pdf}
+% -----------------------------------------------------------------------------------
+% \begin{folhadeaprovacao}
+%   \begin{center}
+%     {\ABNTEXchapterfont\large\imprimirautor}
+
+%     \vspace*{\fill}
+%     {\ABNTEXchapterfont\bfseries\Large\imprimirtitulo}
+%     \vspace*{\fill}
+
+%     \hspace{.45\textwidth}
+%     \begin{minipage}{.5\textwidth}
+%       \SingleSpacing
+%       \imprimirpreambulo
+%     \end{minipage}%
+%     \vspace*{\fill}
+%   \end{center}
+
+%   % [A FAZER: Ajuste a data de aprovação. \today usa a data da compilação.]
+%   Trabalho aprovado. \imprimirlocal, \today:
+%   \vspace*{2cm}
+
+%   % [A FAZER: Preencha com os nomes dos membros da sua banca examinadora.]
+%   \assinatura{\textbf{\imprimirorientador} \\ Orientador(a)}
+%   \assinatura{\textbf{Nome Completo Membro da Banca 1} \\ Instituição}
+%   \assinatura{\textbf{Nome Completo Membro da Banca 2} \\ Instituição}
+%   % \assinatura{\textbf{Nome Completo do Membro da Banca 3} \\ Instituição} % Descomente se necessário
+
+% \end{folhadeaprovacao}
+
+
+% -----------------------------------------------------------------------------------
+% -- DEDICATÓRIA (Opcional)
+% -----------------------------------------------------------------------------------
+% [A FAZER: Escreva sua dedicatória aqui ou comente/remova todo o ambiente.]
+% \begin{dedicatoria}
+% 	\vspace*{\fill} % Centraliza o texto verticalmente
+% 	\flushright    % Alinha o texto à direita
+% 	\textit{DEDICATÓRIA: Agradeço aos ..., pelo apoio e incentivo incondicional...}
+% \end{dedicatoria}
+
+
+% -----------------------------------------------------------------------------------
+% -- AGRADECIMENTOS (Opcional)
+% -----------------------------------------------------------------------------------
+% [A FAZER: Escreva seus agradecimentos aqui ou comente/remova todo o ambiente.]
+% \begin{agradecimentos}
+% Agradeço a todos que contribuíram para a realização deste trabalho. Em especial, ao meu orientador, Prof. Dr. [Nome do Orientador], pelo suporte e orientação ao longo de todo o processo.
+
+% \end{agradecimentos}
+
+
+% -----------------------------------------------------------------------------------
+% -- EPÍGRAFE (Opcional)
+% -----------------------------------------------------------------------------------
+% [A FAZER: Adicione uma epígrafe aqui ou comente/remova todo o ambiente.]
+% \begin{epigrafe}
+% 	\vspace*{\fill}
+% 	\begin{flushright}
+% 		\textit{``A educação é a arma mais poderosa que você pode usar para mudar o mundo."} \\
+% 		\textendash{} Nelson Mandela
+% 	\end{flushright}
+% \end{epigrafe}
+
+
+% -----------------------------------------------------------------------------------
+% -- RESUMO EM PORTUGUÊS (Obrigatório)
+% -----------------------------------------------------------------------------------
+\begin{resumo}
+    Este trabalho apresenta uma implementação sequencial e uma versão paralela (Pthreads) do Jogo da Vida de Conway em C. A decomposição por blocos de linhas distribui o grid entre as threads, enquanto barreiras sincronizam a progressão de cada geração. O código foi estruturado para separar kernel de atualização, entrada/saída e orquestração, permitindo medir apenas o tempo de computação. Serão avaliados tempo de execução, speedup e eficiência em diferentes tamanhos de matrizes e números de threads. Figuras e gráficos serão gerados posteriormente em Python para ilustrar a evolução de padrões e o particionamento do domínio.
+
+    \vspace{\onelineskip}
+    \noindent
+    \textbf{Palavras-chave}: Computação Paralela; Pthreads; Autômatos Celulares; Jogo da Vida; Desempenho.
+\end{resumo}
+
+
+% -----------------------------------------------------------------------------------
+% -- RESUMO EM LÍNGUA ESTRANGEIRA (Obrigatório)
+% -----------------------------------------------------------------------------------
+\begin{resumo}[Abstract]
+    \begin{otherlanguage*}{english}
+
+        This project implements Conway's Game of Life in C with two versions: a sequential baseline and a shared-memory parallel variant using POSIX threads. A row-block decomposition assigns contiguous slices of the grid to each thread, and per-generation barriers maintain correctness while swapping buffers. The codebase separates the update kernel from orchestration and I/O, enabling timing that excludes file writing. We plan to measure execution time, speedup, and efficiency across grid sizes and thread counts. Placeholders are reserved for Python-generated figures illustrating pattern evolution and domain decomposition.
+
+        \vspace{\onelineskip}
+        \noindent
+        \textbf{Keywords}: Parallel Computing; Pthreads; Cellular Automata; Game of Life; Performance Evaluation.
+
+    \end{otherlanguage*}
+\end{resumo}

@@ -1,0 +1,17 @@
+\chapter{Related Work}\label{cap:related}
+
+\section{Parallel Cellular Automata}
+
+Cellular automata (CA) are frequently used to stress-test parallel platforms because each generation combines uniform, local updates. Prior studies on Conway's Game of Life explore shared-memory parallelism with OpenMP or Pthreads, distributed-memory approaches with MPI, and GPU acceleration using CUDA or OpenCL. Shared-memory implementations typically partition the grid into row or block slices and synchronize threads with barriers once per generation to maintain correctness.
+
+\section{Decomposition and Synchronization Strategies}
+
+Row-wise and tile-based decompositions reduce synchronization frequency while preserving cache locality. Double-buffering is used almost universally to avoid read--write hazards when threads update the grid in place. Some work overlaps computation with communication on distributed systems; in shared memory, the focus shifts to minimizing false sharing and balancing rows across cores.
+
+\section{Performance Evaluation Practices}
+
+Speedup and efficiency relative to a sequential baseline are standard metrics. Studies report that performance scales until memory bandwidth or cache pressure dominates. Visualization of pattern evolution (e.g., oscillators, spaceships) remains important for validating correctness; this document reserves placeholders for figures to be generated later with Python to illustrate domain decomposition and pattern trajectories.
+
+\section{Gap Addressed}
+
+This report provides a clear, pedagogical comparison between a sequential Game of Life implementation and a Pthreads-based version using explicit barriers, following the structure of the previous MPI project but adapted to shared memory. The focus is on transparent code organization, reproducible timing, and lightweight visualization for small to medium grids.

@@ -1,0 +1,33 @@
+\chapter{Conclusion}\label{cap:conclusion}
+
+\section{Summary}
+
+This work implemented Conway's Game of Life in C with two versions: a sequential baseline and a shared-memory parallel version using Pthreads. The design emphasized clear separation between the update kernel, input/output handling, and orchestration. Barriers coordinate per-generation progress, and row-block decomposition balances work across threads.
+
+\section{Contributions}
+
+\begin{itemize}
+    \item Clean codebase mirroring the prior MPI project, now adapted to shared memory with Pthreads;
+    \item Timing instrumentation that isolates computation time and logs output artifacts for reproducibility;
+    \item Placeholders and plan for visualizations to validate correctness (pattern evolution) and explain parallel decomposition;
+    \item Experimental plan for evaluating speedup and efficiency across grid sizes and thread counts.
+\end{itemize}
+
+\section{Limitations}
+
+\begin{itemize}
+    \item Current measurements and figures are pending; placeholders remain for collected data.
+    \item The implementation uses naive boundary checks and no halo caching; performance on very large grids may be bandwidth-bound.
+    \item Only row-wise decomposition is explored; alternative tiling strategies could further improve cache locality.
+\end{itemize}
+
+\section{Future Work}
+
+\begin{itemize}
+    \item Collect and analyze performance data on multiple hardware configurations.
+    \item Add visualization scripts (Python/Matplotlib) to generate the planned figures and animations.
+    \item Explore optimizations such as bit-packed grids, SIMD-friendly neighbor counting, and tiled decomposition.
+    \item Compare with other parallel models (OpenMP) and accelerators (CUDA/OpenCL) for larger grids.
+\end{itemize}
+
+Once experiments are complete, this chapter will be updated with concrete results and a refined discussion of observed scalability and bottlenecks.

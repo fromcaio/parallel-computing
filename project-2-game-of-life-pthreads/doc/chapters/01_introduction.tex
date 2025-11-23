@@ -1,0 +1,27 @@
+\chapter{Introduction}\label{cap:intro}
+
+\section{Context and Motivation}
+
+Conway's Game of Life is a classic cellular automaton used to explore emergent behavior from simple local rules. Each cell in a two-dimensional grid toggles between ``alive'' and ``dead'' based on the state of its eight neighbors, producing complex patterns such as oscillators, spaceships, and still lifes. Beyond its didactic value, the simulation models diffusion, pattern growth, and neighborhood interactions that appear in physics, biology, and distributed systems.
+
+Running large grids or many generations is computationally expensive. Modern CPUs expose multiple cores, and parallel programming libraries such as POSIX threads (Pthreads) allow applications to exploit shared-memory hardware. This project reimplements the Game of Life with two complementary versions: a sequential baseline and a parallel version using Pthreads with domain decomposition and barriers. The work follows the structure of the previous MPI project, now adapted to a shared-memory setting.
+
+\section{Objectives}
+
+\subsection{General Objective}
+
+Develop and evaluate sequential and parallel (Pthreads) implementations of Conway's Game of Life, comparing performance and discussing scalability on shared-memory systems.
+
+\subsection{Specific Objectives}
+
+\begin{itemize}
+    \item Build a correct sequential implementation to serve as a baseline for validation and timing;
+    \item Design a row-block domain decomposition with per-generation barriers to synchronize thread progression;
+    \item Instrument both versions to measure execution time, speedup, and efficiency for different grid sizes and thread counts;
+    \item Produce visualizations of pattern evolution to illustrate correctness (placeholders provided; figures will be generated later in Python);
+    \item Discuss limitations, bottlenecks, and potential improvements for shared-memory parallelization of cellular automata.
+\end{itemize}
+
+\section{Document Organization}
+
+Chapter~\ref{cap:related} surveys related work on parallel cellular automata. Chapter~\ref{cap:methodology} details the experimental design. Chapter~\ref{cap:development} presents the implementation. Chapter~\ref{cap:results} reports performance results and visual summaries, and Chapter~\ref{cap:conclusion} concludes with lessons learned and future work.
