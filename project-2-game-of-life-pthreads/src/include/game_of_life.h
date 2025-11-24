@@ -19,4 +19,6 @@ int count_alive_cells(const Grid *grid);
 
 void step_range(const Grid *current, Grid *next, int start_row, int end_row);
 
+long get_peak_rss_kb(void);
+
 #endif

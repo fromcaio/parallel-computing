@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 
 static inline size_t cell_index(const Grid *grid, int row, int col) {
     return (size_t)row * (size_t)grid->cols + (size_t)col;
@@ -198,4 +199,13 @@ void step_range(const Grid *current, Grid *next, int start_row, int end_row) {
             next->cells[cell_index(next, r, c)] = next_state(current, r, c);
         }
     }
+}
+
+long get_peak_rss_kb(void) {
+    struct rusage usage;
+    if (getrusage(RUSAGE_SELF, &usage) != 0) {
+        return -1;
+    }
+
+    return usage.ru_maxrss;
 }

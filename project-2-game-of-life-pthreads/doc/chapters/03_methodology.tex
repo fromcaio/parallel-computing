@@ -2,69 +2,66 @@
 
 \section{Development Environment}
 
-All code was written in C11 and compiled with \texttt{gcc} using the \texttt{-pthread} flag for the parallel build. The experiments will run on a multicore Linux system; exact hardware and OS details will be filled in after data collection (CPU model, core count, RAM, compiler version).
+The software was developed in C11, ensuring compliance with modern standards while maintaining low-level memory control. The compilation uses \texttt{gcc} with the \texttt{-pthread} flag to enable POSIX threads support.
+
+\subsection{Hardware Specifications}
+The experiments were conducted on a single-socket workstation with the following configuration:
+\begin{itemize}
+    \item \textbf{Processor}: Intel Xeon E5-2650 (10 physical cores, 20 hardware threads via SMT).
+    \item \textbf{Memory}: 32\,GB DDR4 RAM (ample to hold the largest $5000 \times 5000$ grids and associated buffers).
+    \item \textbf{Operating System}: Pop!\_OS 22.04 LTS (64-bit).
+\end{itemize}
+
+This hardware configuration allows for testing three distinct parallelism phases:
+\begin{enumerate}
+    \item \textbf{Physical Scaling (1--10 threads)}: Utilizing dedicated physical cores.
+    \item \textbf{SMT Scaling (11--20 threads)}: Utilizing hardware threads (Hyper-Threading).
+    \item \textbf{Oversubscription (21--40 threads)}: Exceeding hardware capacity to test context-switching overhead.
+\end{enumerate}
 
 \section{Project Structure}
 
-The repository mirrors the previous project layout, separating shared code and entry points:
+The project follows a modular structure to separate core logic, parallel orchestration, and data management:
 
 \begin{verbatim}
-project-2-game-of-life-pthreads/
-|-- Makefile
+project-root/
+|-- Makefile                    # Build automation
+|-- doc/                        # Report, figures, and LaTeX sources
 |-- src/
-|   |-- game_of_life.c           # I/O + step kernel
+|   |-- game_of_life.c          # Core logic and I/O
 |   |-- game_of_life_sequential.c
-|   |-- game_of_life_pthreads.c
+|   |-- game_of_life_pthreads.c # Parallel driver
 |   `-- include/game_of_life.h
-|-- samples/                     # Input patterns
-`-- output/                      # Generated at runtime
+|-- samples/                    # Benchmark inputs (.txt)
+`-- output/                     # Simulation results
 \end{verbatim}
-
-The Makefile exposes two main targets: \texttt{make} (parallel) and \texttt{make sequential}. Both binaries log execution time (computation only) and emit the final grid to \texttt{output/}.
 
 \section{Experimental Design}
 
-\subsection{Inputs}
-
-Inputs follow the required format: number of generations, grid dimensions, and a list of initially alive coordinates. Provided samples include a blinker, a block, and a glider; larger synthetic grids will be generated for benchmarking (placeholders for scripts and figures are included below).
+\subsection{Workloads}
+To stress the system, we generated synthetic benchmark datasets with a random cell density of 20\% ($\rho = 0.2$). The grid sizes chosen for evaluation are:
+\begin{itemize}
+    \item $1000 \times 1000$ (1 million cells)
+    \item $2000 \times 2000$ (4 million cells)
+    \item $4000 \times 4000$ (16 million cells)
+    \item $5000 \times 5000$ (25 million cells)
+\end{itemize}
+All tests run for 50 generations.
 
 \subsection{Metrics}
-
-We will measure:
+We evaluate performance using the following metrics:
 \begin{itemize}
-    \item Execution time (computation only) for sequential and parallel versions;
-    \item Speedup $S = T_{seq} / T_{par}$;
-    \item Efficiency $E = S / p$, with $p$ threads.
+    \item \textbf{Execution Time ($T$)}: Wall-clock time of the computation phase, excluding I/O.
+    \item \textbf{Speedup ($S$)}: Defined as $S_p = T_{seq} / T_{par}(p)$.
+    \item \textbf{Peak Memory (RSS)}: The maximum Resident Set Size of the process, measured via \texttt{getrusage(RUSAGE\_SELF).ru\_maxrss}. RSS captures the physical memory actually touched by the program: both grids (current and next), heap allocations, and the stack pages actually used by all threads (unused portions of the default \textasciitilde8\,MB pthread stacks are not counted). Shared libraries and binary sections are also part of RSS.
 \end{itemize}
 
-\subsection{Timing and Exclusions}
+\subsection{Interpreting RSS for Sequential vs. Parallel Runs}
+Sequential and parallel runs report similar RSS because Linux commits stack pages lazily. Each worker thread touches only a few kilobytes of stack (no deep recursion and minimal locals), so the dominant footprint is:
+\[
+    2 \times (\text{rows} \times \text{cols}) \text{ bytes (double-buffered grids)} + \text{libc + binary} + \text{small stacks}.
+\]
+Thus, increasing thread count does not significantly inflate peak physical memory.
 
-Timing uses \texttt{clock\_gettime(CLOCK\_MONOTONIC)} and excludes output file writing. Each run will be repeated (placeholder: number of repetitions to be set) to mitigate noise; averages and standard deviations will be reported.
-
-\subsection{Visualization Placeholders}
-
-Figures will be generated with Python to illustrate:
-\begin{itemize}
-    \item Evolution of selected patterns over a small number of generations;
-    \item Thread domain decomposition over the grid (row-block assignment);
-    \item Performance plots (execution time vs. threads; speedup vs. threads).
-\end{itemize}
-
-Example placeholder for a decomposition diagram:
-
-\begin{figure}[h]
-    \centering
-    \fbox{\parbox{0.8\linewidth}{Placeholder: row-block domain decomposition figure (to be generated in Python).}}
-    \caption{(Placeholder) Row partitioning of the grid across threads.}
-    \label{fig:decomposition}
-\end{figure}
-
-\section{Execution Plan}
-
-\begin{enumerate}
-    \item Validate correctness on small patterns (blinker, block, glider) against expected states.
-    \item Collect timing data for multiple grid sizes (placeholder: e.g., $256\times256$, $512\times512$, $1024\times1024$) and generations (placeholder: 50--200).
-    \item Run with varying thread counts (1, 2, 4, 8, ... up to hardware limit).
-    \item Generate plots and evolution images using Python scripts (to be added).
-    \item Summarize results with speedup/efficiency tables and discuss bottlenecks.
-\end{enumerate}
+\subsection{Validation Strategy}
+Correctness is validated by simulating standard patterns. We visualize the evolution of a "Glider" (a simple spaceship) and a "Gosper Glider Gun" (a complex oscillator) to ensure that the parallel domain decomposition does not introduce artifacts at thread boundaries.

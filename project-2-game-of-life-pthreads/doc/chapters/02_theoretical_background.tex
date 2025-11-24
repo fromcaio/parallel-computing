@@ -1,0 +1,48 @@
+\chapter{Theoretical Background}\label{cap:background}
+
+\section{Cellular Automata Foundations}
+
+Cellular automata are discrete dynamical systems defined on regular grids where each cell updates synchronously based on a local neighborhood. Conway's Game of Life operates on a two-dimensional grid with binary states (alive or dead) and uses the Moore neighborhood of eight adjacent cells. The update rule is applied in lockstep for all cells, making time advance in discrete generations and lending itself to parallel evaluation.
+
+The Game of Life follows two simple rules:
+\begin{itemize}
+    \item \textbf{Survival}: A live cell with two or three live neighbors stays alive; otherwise, it dies from underpopulation or overpopulation.
+    \item \textbf{Birth}: A dead cell with exactly three live neighbors becomes alive.
+\end{itemize}
+
+Although the rules are local, their repeated application gives rise to complex emergent patterns. The automaton is Turing complete, meaning it can simulate arbitrary computation given sufficient space and time. This richness makes it a popular benchmark for studying performance, data layout, and concurrency strategies in grid-based simulations.
+
+\section{Boundary Conditions and Grid Topology}
+
+Our implementation uses toroidal boundary conditions: the grid ``wraps around'' so that cells on one edge treat the opposite edge as a neighbor. This choice avoids special-case logic for borders and keeps memory access patterns regular, which benefits caching and simplifies thread partitioning.
+
+\section{Representative Patterns}
+
+Two canonical patterns illustrate both stability and growth in the Game of Life:
+
+\begin{itemize}
+    \item \textbf{Glider}: A five-cell spaceship that translates diagonally every four generations. It is a minimal example of motion and is widely used to test correctness across generations.
+    \item \textbf{Gosper Glider Gun}: A larger oscillator that periodically emits gliders. It demonstrates sustained activity and highlights how local interactions can generate unbounded growth.
+\end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.55\linewidth]{imgs/01-glider.png}
+    \caption{Glider pattern evolution across successive generations.}
+    \label{fig:glider}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\linewidth]{imgs/02-glider-gun.png}
+    \caption{Gosper Glider Gun emitting a stream of gliders.}
+    \label{fig:glider_gun}
+\end{figure}
+
+\section{Computational Characteristics}
+
+Each generation requires counting neighbors and writing an updated grid, yielding $O(N^2)$ operations for an $N \times N$ grid. The computation is memory-bound because each cell touches a small, fixed neighborhood, and spatial locality dominates performance. These properties favor spatial decomposition (row or block partitioning) and barrier-based synchronization, which allow threads to work independently on subdomains while maintaining generation-level consistency.
+
+\section{Implications for Parallelization}
+
+The uniform rule set and regular memory access patterns align well with shared-memory parallelism. Decomposing the grid by contiguous rows minimizes cache conflicts and balances work evenly when the grid is dense. Barrier synchronization between generations enforces the synchronous update model, while careful data layout (e.g., contiguous arrays) reduces cache misses. The glider and glider gun patterns serve as functional tests to ensure boundary wrapping and synchronization correctness before scaling to larger benchmarks.

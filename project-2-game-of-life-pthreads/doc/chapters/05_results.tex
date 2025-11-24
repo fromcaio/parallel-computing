@@ -1,53 +1,108 @@
 \chapter{Results and Analysis}\label{cap:results}
 
-\section{Execution Environment}
+This chapter presents the performance data collected from the Intel Xeon workstation (10 cores, 20 threads). We analyze the execution time, speedup, and memory consumption across varying grid sizes and thread counts.
 
-Hardware and software details will be completed after experiments (CPU model, core count, RAM, OS, compiler version). All runs will be performed on an otherwise idle machine to reduce noise.
+\section{Performance Summary}
 
-\section{Workloads}
+The complete dataset for the benchmark runs is presented in Table~\ref{tab:full-results}. The table compares the sequential baseline against the parallel implementation for thread counts ranging from 1 to 40.
 
-Benchmarks will use a mix of small correctness patterns (blinker, block, glider) and larger synthetic grids. Planned sizes (subject to adjustment): $256\times256$, $512\times512$, and $1024\times1024$ with 50--200 generations.
+\definecolor{rowgreen1}{HTML}{F6FCF4}
+\definecolor{rowgreen2}{HTML}{E7F6E3}
+\definecolor{rowgreen3}{HTML}{C3E6BE}
+\definecolor{rowgreen4}{HTML}{9CD896}
 
-\section{Performance Metrics}
+% Detailed Results Table
+\begin{longtable}{cccccc}
+\caption{Detailed Performance Metrics (Time, Speedup, and Memory usage). Speedup highlights efficiency gains.} \label{tab:full-results} \\
+\toprule
+\textbf{Size} & \textbf{Type} & \textbf{Threads} & \textbf{Time (s)} & \textbf{Speedup} & \textbf{Mem (MB)} \\
+\midrule
+\endfirsthead
+\multicolumn{6}{c}%
+{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
+\toprule
+\textbf{Size} & \textbf{Type} & \textbf{Threads} & \textbf{Time (s)} & \textbf{Speedup} & \textbf{Mem (MB)} \\
+\midrule
+\endhead
+\hline \multicolumn{6}{r}{\textit{Continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 
-For each workload and thread count $p$, we will report:
-\begin{itemize}
-    \item Computation time (median/average over multiple runs);
-    \item Speedup $S = T_{seq} / T_{par}$;
-    \item Efficiency $E = S / p$.
-\end{itemize}
+% 1000x1000
+1000 & Seq & 1 & 4.3729 & 1.00 & 156.3 \\
+1000 & Par & 1 & 4.4503 & 0.98 & 156.3 \\
+1000 & Par & 2 & 2.3485 & 1.86 & 156.3 \\
+1000 & Par & 4 & 1.2169 & 3.59 & 156.3 \\
+1000 & Par & 8 & 0.6989 & 6.26 & 156.3 \\
+1000 & Par & 10 & 0.6355 & 6.88 & 156.3 \\
+1000 & Par & 16 & 0.6339 & 6.90 & 156.3 \\
+1000 & Par & 20 & 0.5534 & 7.90 & 156.3 \\
+1000 & Par & 32 & 0.5341 & 8.19 & 156.3 \\
+1000 & Par & 40 & 0.5288 & 8.27 & 156.3 \\
+\midrule
 
-\section{Placeholders for Tables and Figures}
+% 2000x2000
+2000 & Seq & 1 & 17.1291 & 1.00 & 182.0 \\
+2000 & Par & 1 & 17.1247 & 1.00 & 182.0 \\
+2000 & Par & 2 & 8.9809 & 1.91 & 182.0 \\
+2000 & Par & 4 & 4.5213 & 3.79 & 182.0 \\
+2000 & Par & 8 & 2.4669 & 6.94 & 182.0 \\
+2000 & Par & 10 & 2.0090 & 8.53 & 182.0 \\
+2000 & Par & 16 & 2.2395 & 7.65 & 182.0 \\
+2000 & Par & 20 & 1.9269 & 8.89 & 182.0 \\
+2000 & Par & 32 & 1.9002 & 9.01 & 182.0 \\
+2000 & Par & 40 & 1.8802 & 9.11 & 182.0 \\
+\midrule
 
-Tables of raw timings and derived metrics will be inserted here. Plots will be generated in Python; placeholders below reserve space in the document.
+% 4000x4000
+4000 & Seq & 1 & 67.0564 & 1.00 & 292.0 \\
+4000 & Par & 1 & 67.9109 & 0.99 & 292.0 \\
+4000 & Par & 2 & 34.7600 & 1.93 & 292.0 \\
+4000 & Par & 4 & 18.4131 & 3.64 & 292.0 \\
+4000 & Par & 8 & 9.3044 & 7.21 & 292.0 \\
+4000 & Par & 10 & 7.6400 & 8.78 & 292.0 \\
+4000 & Par & 16 & 8.5427 & 7.85 & 292.0 \\
+4000 & Par & 20 & 7.5020 & 8.94 & 292.0 \\
+4000 & Par & 32 & 7.8531 & 8.54 & 292.0 \\
+4000 & Par & 40 & 7.5150 & 8.92 & 292.0 \\
+\midrule
 
-\begin{table}[h]
+% 5000x5000
+5000 & Seq & 1 & 100.3386 & 1.00 & 398.9 \\
+5000 & Par & 1 & 104.3410 & 0.96 & 398.9 \\
+5000 & Par & 2 & 54.6178 & 1.84 & 398.9 \\
+5000 & Par & 4 & 28.4175 & 3.53 & 398.9 \\
+5000 & Par & 8 & 14.3407 & 7.00 & 398.9 \\
+5000 & Par & 10 & 11.8350 & 8.48 & 398.9 \\
+5000 & Par & 16 & 13.3089 & 7.54 & 398.9 \\
+5000 & Par & 20 & 11.3357 & 8.85 & 398.9 \\
+5000 & Par & 32 & 11.6637 & 8.60 & 398.9 \\
+5000 & Par & 40 & 11.3941 & 8.81 & 398.9 \\
+\end{longtable}
+
+\section{Scalability Analysis}
+
+The scalability of the application is visualized in Figure~\ref{fig:speedup-plot}. The plot reveals three distinct behavior zones corresponding to the hardware architecture.
+
+\begin{figure}[H]
     \centering
-    \caption{(Placeholder) Execution time, speedup, and efficiency by grid size and thread count.}
-    \label{tab:timings}
-    \begin{tabular}{cccc}
-        \toprule
-        Grid & Threads & Time (s) & Speedup/Efficiency \\
-        \midrule
-        % To be filled with collected data
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\begin{figure}[h]
-    \centering
-    \fbox{\parbox{0.8\linewidth}{Placeholder: plot of execution time vs. threads for multiple grid sizes (to be generated in Python).}}
-    \caption{(Placeholder) Execution time for sequential and parallel runs.}
-    \label{fig:exec-time}
+    \includegraphics[width=1.0\linewidth]{./imgs/03-speedup-vs-thread-count.png}
+    \caption{Speedup vs. Thread Count. Vertical lines indicate the physical core count (10) and SMT limit (20).}
+    \label{fig:speedup-plot}
 \end{figure}
 
-\begin{figure}[h]
-    \centering
-    \fbox{\parbox{0.8\linewidth}{Placeholder: speedup curve across thread counts (to be generated in Python).}}
-    \caption{(Placeholder) Speedup relative to the sequential baseline.}
-    \label{fig:speedup}
-\end{figure}
+\subsection{Physical Cores (1--10 Threads)}
+For all grid sizes, we observe strong scaling up to 10 threads. For the $4000 \times 4000$ grid, the speedup at 10 threads is $8.78\times$, indicating a parallel efficiency of roughly 88\%. This high efficiency demonstrates that the row-block decomposition is effective and that the barrier overhead is minimal compared to the computation time for large grids.
 
-\section{Preliminary Observations}
+\subsection{Hyper-Threading / SMT (11--20 Threads)}
+Beyond 10 threads, the gains flatten. Hyper-Threading adds only a second hardware context; it does not duplicate ALUs, vector units, caches, or memory ports. Both logical threads on one core compete for the same L1/L2 caches, execution ports, and DRAM bandwidth. Game of Life is memory-bandwidth bound (every generation touches the whole grid and performs many loads per cell), so additional logical threads simply contend for the same cache and memory resources instead of increasing throughput.
 
-We expect near-linear speedup for moderate thread counts until memory bandwidth and barrier overhead dominate. Small grids may show limited gains due to synchronization cost. Final discussion will be updated once measurements are available.
+\subsection{Oversubscription ($>20$ Threads)}
+Testing with 32 and 40 threads yields no performance improvement, and in some cases (e.g., $4000 \times 4000$), a slight degradation is observed ($8.94\times \to 8.54\times$). Oversubscription adds context-switching and barrier wait overhead without adding compute or bandwidth capacity.
+
+\subsection{Row Partitioning Effects}
+For some sizes (e.g., $1000 \times 1000$), 16 threads show a small speed gain over 10 threads. This comes from a more even split of remainder rows and shorter per-thread slices that fit better in caches. The effect is modest and disappears on larger grids where memory bandwidth dominates.
+
+\section{Memory Usage}
+The \texttt{Memory\_MB} column in Table~\ref{tab:full-results} stays within a narrow band across thread counts. The dominant footprint is the two grid buffers ($2 \times R \times C$ bytes) plus binary and library code. Each thread gets a stack, but Linux commits stack pages lazily, so only the few kilobytes actually touched show up in RSS; adding threads therefore does not inflate measured peak RSS significantly.

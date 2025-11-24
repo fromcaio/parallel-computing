@@ -2,26 +2,35 @@
 
 \section{Context and Motivation}
 
-Conway's Game of Life is a classic cellular automaton used to explore emergent behavior from simple local rules. Each cell in a two-dimensional grid toggles between ``alive'' and ``dead'' based on the state of its eight neighbors, producing complex patterns such as oscillators, spaceships, and still lifes. Beyond its didactic value, the simulation models diffusion, pattern growth, and neighborhood interactions that appear in physics, biology, and distributed systems.
+Conway's Game of Life is a classic cellular automaton used to explore emergent behavior derived from simple local rules. Within a two-dimensional grid, each cell toggles between states of ``alive'' and ``dead'' based on the status of its eight immediate neighbors (Moore neighborhood). Despite the simplicity of these rules, the system is capable of producing highly complex patterns, including stable structures (still lifes), oscillating patterns (oscillators), and moving entities (spaceships).
 
-Running large grids or many generations is computationally expensive. Modern CPUs expose multiple cores, and parallel programming libraries such as POSIX threads (Pthreads) allow applications to exploit shared-memory hardware. This project reimplements the Game of Life with two complementary versions: a sequential baseline and a parallel version using Pthreads with domain decomposition and barriers. The work follows the structure of the previous MPI project, now adapted to a shared-memory setting.
+Computationally, the Game of Life represents a stencil computation pattern, commonly found in physical simulations. As grid dimensions and the number of generations increase, the computational cost grows quadratically. Modern processor architectures attempt to mitigate such costs through multi-core designs. Consequently, parallel programming libraries, such as POSIX threads (Pthreads), have become effective tools for exploiting shared-memory hardware.
+
+This project implements a high-performance version of the Game of Life using Pthreads. It employs domain decomposition and explicit barrier synchronization to distribute the workload across multiple processing cores. This work focuses on adapting spatial decomposition strategies to the lower-latency, shared-memory context of a single Symmetric Multiprocessing (SMP) node.
 
 \section{Objectives}
 
 \subsection{General Objective}
 
-Develop and evaluate sequential and parallel (Pthreads) implementations of Conway's Game of Life, comparing performance and discussing scalability on shared-memory systems.
+The primary objective of this work is to develop and benchmark a shared-memory parallel implementation of Conway's Game of Life, evaluating its scalability on multi-core architectures.
 
 \subsection{Specific Objectives}
 
 \begin{itemize}
-    \item Build a correct sequential implementation to serve as a baseline for validation and timing;
-    \item Design a row-block domain decomposition with per-generation barriers to synchronize thread progression;
-    \item Instrument both versions to measure execution time, speedup, and efficiency for different grid sizes and thread counts;
-    \item Produce visualizations of pattern evolution to illustrate correctness (placeholders provided; figures will be generated later in Python);
-    \item Discuss limitations, bottlenecks, and potential improvements for shared-memory parallelization of cellular automata.
+    \item \textbf{Implementation}: Develop a robust sequential baseline and a parallel version using Pthreads with row-block domain decomposition.
+    \item \textbf{Synchronization}: Implement efficient inter-thread coordination using POSIX barriers to manage the generational time-steps.
+    \item \textbf{Benchmarking}: Measure execution time, speedup, and memory usage across a wide range of thread counts (1 to 40) and grid sizes (up to $5000 \times 5000$).
+    \item \textbf{Analysis}: Analyze the impact of Physical Cores versus Simultaneous Multithreading (SMT) on the performance of memory-bound cellular automata.
 \end{itemize}
 
 \section{Document Organization}
 
-Chapter~\ref{cap:related} surveys related work on parallel cellular automata. Chapter~\ref{cap:methodology} details the experimental design. Chapter~\ref{cap:development} presents the implementation. Chapter~\ref{cap:results} reports performance results and visual summaries, and Chapter~\ref{cap:conclusion} concludes with lessons learned and future work.
+This document is organized into six chapters:
+\begin{itemize}
+    \item \textbf{Chapter \ref{cap:intro} (Introduction)}: Presents the context, motivation, and objectives of the work.
+    \item \textbf{Chapter \ref{cap:background} (Theoretical Background)}: Reviews the cellular automata model, the Game of Life rules, and illustrative patterns such as the glider and the Gosper glider gun that are used throughout this work.
+    \item \textbf{Chapter \ref{cap:methodology} (Methodology)}: Details the hardware environment, experimental design, and metrics used for evaluation.
+    \item \textbf{Chapter \ref{cap:development} (Implementation)}: Describes the data structures, parallelization strategy using Pthreads, and memory management techniques.
+    \item \textbf{Chapter \ref{cap:results} (Results and Analysis)}: Presents the quantitative performance data, speedup plots, and an analysis of the results.
+    \item \textbf{Chapter \ref{cap:conclusion} (Conclusion)}: Summarizes the main findings and suggests directions for future work.
+\end{itemize}

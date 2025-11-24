@@ -2,32 +2,19 @@
 
 \section{Summary}
 
-This work implemented Conway's Game of Life in C with two versions: a sequential baseline and a shared-memory parallel version using Pthreads. The design emphasized clear separation between the update kernel, input/output handling, and orchestration. Barriers coordinate per-generation progress, and row-block decomposition balances work across threads.
+We built and evaluated sequential and Pthreads implementations of Conway's Game of Life. Row-block decomposition and barrier-based synchronization yielded strong scaling up to the 10 physical cores of the Xeon E5-2650. Visual validation with glider and glider-gun patterns confirmed correctness; benchmarks across large grids quantified speedup, memory use, and the limits of Hyper-Threading on this memory-bound kernel.
 
-\section{Contributions}
-
-\begin{itemize}
-    \item Clean codebase mirroring the prior MPI project, now adapted to shared memory with Pthreads;
-    \item Timing instrumentation that isolates computation time and logs output artifacts for reproducibility;
-    \item Placeholders and plan for visualizations to validate correctness (pattern evolution) and explain parallel decomposition;
-    \item Experimental plan for evaluating speedup and efficiency across grid sizes and thread counts.
-\end{itemize}
-
-\section{Limitations}
+\section{Key Findings}
 
 \begin{itemize}
-    \item Current measurements and figures are pending; placeholders remain for collected data.
-    \item The implementation uses naive boundary checks and no halo caching; performance on very large grids may be bandwidth-bound.
-    \item Only row-wise decomposition is explored; alternative tiling strategies could further improve cache locality.
+    \item \textbf{Physical-core scaling}: Near-linear speedup up to 10 threads with $\sim$88\% efficiency for large grids.
+    \item \textbf{Memory-bandwidth bound}: Hyper-Threading (11--20 threads) and oversubscription do not add throughput because logical threads share caches and memory ports; gains plateau.
+    \item \textbf{Synchronization robustness}: Two barriers per generation add modest overhead even when oversubscribed; row partitioning remains balanced.
+    \item \textbf{Memory footprint}: Peak RSS is dominated by the two grid buffers. Extra thread stacks are small and allocated lazily, so adding threads does not materially increase measured RSS.
 \end{itemize}
 
 \section{Future Work}
 
 \begin{itemize}
-    \item Collect and analyze performance data on multiple hardware configurations.
-    \item Add visualization scripts (Python/Matplotlib) to generate the planned figures and animations.
-    \item Explore optimizations such as bit-packed grids, SIMD-friendly neighbor counting, and tiled decomposition.
-    \item Compare with other parallel models (OpenMP) and accelerators (CUDA/OpenCL) for larger grids.
+    \item \textbf{Bit-packing to cut memory}: Cells are stored as 1 byte; packing 8 cells per byte would reduce grid storage by $\approx8\times$, lowering cache and bandwidth demand and shrinking RSS. This requires bitwise load/store logic and careful handling in \texttt{step\_range} but could enable larger grids or better cache residency.
 \end{itemize}
-
-Once experiments are complete, this chapter will be updated with concrete results and a refined discussion of observed scalability and bottlenecks.

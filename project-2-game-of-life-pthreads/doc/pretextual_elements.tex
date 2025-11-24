@@ -88,13 +88,13 @@
 % -----------------------------------------------------------------------------------
 % -- RESUMO EM PORTUGUÊS (Obrigatório)
 % -----------------------------------------------------------------------------------
-\begin{resumo}
-    Este trabalho apresenta uma implementação sequencial e uma versão paralela (Pthreads) do Jogo da Vida de Conway em C. A decomposição por blocos de linhas distribui o grid entre as threads, enquanto barreiras sincronizam a progressão de cada geração. O código foi estruturado para separar kernel de atualização, entrada/saída e orquestração, permitindo medir apenas o tempo de computação. Serão avaliados tempo de execução, speedup e eficiência em diferentes tamanhos de matrizes e números de threads. Figuras e gráficos serão gerados posteriormente em Python para ilustrar a evolução de padrões e o particionamento do domínio.
+% \begin{resumo}
+%     Este trabalho apresenta uma implementação sequencial e uma versão paralela (Pthreads) do Jogo da Vida de Conway em C. A decomposição por blocos de linhas distribui o grid entre as threads, enquanto barreiras sincronizam a progressão de cada geração. O código foi estruturado para separar kernel de atualização, entrada/saída e orquestração, permitindo medir apenas o tempo de computação. Serão avaliados tempo de execução, speedup e eficiência em diferentes tamanhos de matrizes e números de threads. Figuras e gráficos serão gerados posteriormente em Python para ilustrar a evolução de padrões e o particionamento do domínio.
 
-    \vspace{\onelineskip}
-    \noindent
-    \textbf{Palavras-chave}: Computação Paralela; Pthreads; Autômatos Celulares; Jogo da Vida; Desempenho.
-\end{resumo}
+%     \vspace{\onelineskip}
+%     \noindent
+%     \textbf{Palavras-chave}: Computação Paralela; Pthreads; Autômatos Celulares; Jogo da Vida; Desempenho.
+% \end{resumo}
 
 
 % -----------------------------------------------------------------------------------
@@ -103,7 +103,7 @@
 \begin{resumo}[Abstract]
     \begin{otherlanguage*}{english}
 
-        This project implements Conway's Game of Life in C with two versions: a sequential baseline and a shared-memory parallel variant using POSIX threads. A row-block decomposition assigns contiguous slices of the grid to each thread, and per-generation barriers maintain correctness while swapping buffers. The codebase separates the update kernel from orchestration and I/O, enabling timing that excludes file writing. We plan to measure execution time, speedup, and efficiency across grid sizes and thread counts. Placeholders are reserved for Python-generated figures illustrating pattern evolution and domain decomposition.
+        This project implements Conway's Game of Life in C with two versions: a sequential baseline and a shared-memory parallel variant using POSIX threads. A row-block decomposition assigns contiguous slices of the grid to each thread, and per-generation barriers maintain correctness while swapping buffers. The codebase separates the update kernel from orchestration and I/O, enabling timing that excludes file writing. We measured execution time, speedup, efficiency and peak memory usage across grid sizes up to $5000 \times 5000$ and thread counts ranging from 1 to 40. The results indicate strong scalability within physical core limits.
 
         \vspace{\onelineskip}
         \noindent

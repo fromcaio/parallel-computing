@@ -187,8 +187,12 @@ int main(int argc, char **argv) {
     fclose(out);
 
     const double elapsed = elapsed_seconds(&start_time, &end_time);
+    const long peak_kb = get_peak_rss_kb();
     printf("[Threads] Using %d threads\n", thread_count);
     printf("[Threads] Execution time: %.6f seconds\n", elapsed);
+    if (peak_kb >= 0) {
+        printf("[Threads] Peak memory: %ld KB\n", peak_kb);
+    }
     printf("[Threads] Output written to %s\n", output_path);
 
     free_grid(current);

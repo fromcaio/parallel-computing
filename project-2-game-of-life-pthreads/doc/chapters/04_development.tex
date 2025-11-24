@@ -1,45 +1,73 @@
 \chapter{Implementation}\label{cap:development}
 
-\section{Data Structures and I/O}
+\section{Data Structures and Memory Layout}
 
-The grid is stored as a contiguous array of bytes to maximize spatial locality. A simple \texttt{Grid} struct holds dimensions and a pointer to the cell buffer. Two buffers (current/next) implement double-buffering to avoid read--write hazards during updates. Input parsing validates dimensions and coordinates, and outputs reuse the same format as the input.
+The simulation state is stored in a \texttt{Grid} structure with the dimensions ($R \times C$) and a pointer to a flat array of \texttt{unsigned char}. We intentionally flatten the grid using the index $i = r \times C + c$ instead of a pointer-to-pointer matrix to improve spatial locality and prefetcher efficiency.
 
-\section{Update Kernel}
+We use double-buffering to separate reads from writes. Two buffers, \texttt{current} and \texttt{next}, are allocated. Each generation reads only from \texttt{current} and writes results into \texttt{next}. After a generation completes, the pointers are swapped.
 
-The core step iterates over assigned rows, counts eight neighbors, and writes the next state. The kernel is identical for both builds and lives in a shared module. Boundary checks clamp neighbor coordinates; no wrap-around is applied.
+\section{Sequential Implementation}
 
-\section{Sequential Version}
+The sequential driver performs the following steps:
+\begin{enumerate}
+    \item Load the input file (\texttt{generations}, dimensions, and list of live cells).
+    \item Allocate a second buffer (\texttt{next}) with the same dimensions.
+    \item For each generation, call \texttt{step\_range} to update all rows, then swap \texttt{current} and \texttt{next}.
+    \item Write the final world to \texttt{output/game\_of\_life\_seq\_<rows>x<cols>\_<gen>gen.txt}.
+\end{enumerate}
 
-The sequential binary drives the simulation loop, swapping buffers after each generation. Timing excludes file I/O, and results are written to \texttt{output/game\_of\_life\_seq\_<rows>x<cols>\_<gen>gen.txt}.
+The update routine counts neighbors in the von Neumann + diagonal neighborhood (8 cells) with boundary checks (no wrapping), applies the birth/survival rules, and stores the result in the output buffer.
 
-\section{Parallel Version (Pthreads)}
+\section{Parallel Implementation}
 
-The parallel driver partitions rows into nearly equal blocks (handling remainders to balance work). Each thread receives its start/end rows, a shared pointer to the current/next buffers, and two barriers:
+We utilize a **Row-Block Domain Decomposition** strategy. The grid is divided horizontally, assigning a contiguous block of rows to each thread.
+
+\subsection{Work Distribution}
+For $R$ rows and $T$ threads, the baseline chunk size is $R/T$. Remainder rows ($R \pmod T$) are distributed one per thread to the first few threads to ensure load balancing.
+\begin{lstlisting}[language=C, caption=Row calculation logic]
+const int base_rows = rows / thread_count;
+int remainder = rows % thread_count;
+// ...
+int count = base_rows + (remainder > 0 ? 1 : 0);
+remainder = remainder > 0 ? remainder - 1 : 0;
+\end{lstlisting}
+
+\subsection{Synchronization}
+Synchronization is achieved using POSIX Barriers (\texttt{pthread\_barrier\_t}). Two barriers are required per generation to ensure data consistency without race conditions:
+\begin{enumerate}
+    \item \textbf{Compute Barrier}: Threads wait here after computing their assigned rows. This ensures the \texttt{next} grid is fully populated before any pointer swapping occurs.
+\item \textbf{Swap Barrier}: The main thread (or thread 0) swaps the \texttt{current} and \texttt{next} pointers. All other threads wait at this barrier to ensure they do not start the next generation using old pointers.
+\end{enumerate}
+
+\section{Why the Parallel Loop Is Race-Free}
 \begin{itemize}
-    \item Compute barrier: ensures all threads finish writing their slice for generation $g$.
-    \item Swap barrier: synchronizes after the master thread swaps \texttt{current}/\texttt{next} pointers.
+    \item \textbf{Read-only input}: Each generation reads from \texttt{current} only; no thread writes to this buffer.
+    \item \textbf{Disjoint writes}: Threads receive non-overlapping row ranges, so writes to \texttt{next} never alias.
+    \item \textbf{Barrier-enforced swap}: All threads finish writing before thread 0 swaps the buffers. A second barrier prevents any thread from starting the next generation with stale pointers.
+    \item \textbf{Double-buffering}: The separation of input/output buffers removes read/write hazards within a generation.
 \end{itemize}
 
-This results in two barrier synchronizations per generation, with no additional locks. Output files include the thread count and grid size: \texttt{output/game\_of\_life\_threads\_<t>t\_<rows>x<cols>\_<gen>gen.txt}.
+\section{How to Build}
+\begin{verbatim}
+make sequential   # builds bin/game_of_life_seq
+make parallel     # builds bin/game_of_life_pthread
+\end{verbatim}
 
-\section{Error Handling and Logging}
+\section{How to Run}
+Inputs follow the format: first line = generations; second line = rows cols; third line = count of live cells; subsequent lines = row col of each live cell.
+\begin{verbatim}
+# Sequential
+./bin/game_of_life_seq samples/small_glider_10x10_8gen.txt
 
-Input validation checks negative dimensions and out-of-bounds coordinates. Failure paths free allocated buffers and report errors to \texttt{stderr}. Runtime logs print timing and output paths for reproducibility.
+# Parallel with 8 threads
+./bin/game_of_life_pthread samples/small_glider_10x10_8gen.txt 8
+\end{verbatim}
+Both executables print execution time and peak RSS, then write the final grid to \texttt{output/}.
 
-\section{Visualization Placeholders}
-
-To aid explanation, placeholders are reserved for figures that will be generated later with Python scripts:
-
-\begin{figure}[h]
-    \centering
-    \fbox{\parbox{0.8\linewidth}{Placeholder: Game of Life evolution sequence (to be generated in Python).}}
-    \caption{(Placeholder) Evolution of a glider over several generations.}
-    \label{fig:glider-evolution}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \fbox{\parbox{0.8\linewidth}{Placeholder: Cache-friendly memory layout illustration (to be generated in Python).}}
-    \caption{(Placeholder) Contiguous row-major storage of the grid.}
-    \label{fig:memory-layout}
-\end{figure}
+\section{Expected Output}
+\begin{itemize}
+    \item \textbf{Files}: \texttt{output/game\_of\_life\_seq\_<rows>x<cols>\_<gen>gen.txt}\\
+    \texttt{output/game\_of\_life\_threads\_<t>t\_<rows>x<cols>\_<gen>gen.txt}
+    \item \textbf{Format}: Same as input---generations, dimensions, number of live cells, followed by coordinates of live cells in the final state.
+    \item \textbf{Console}: Timing and peak RSS (resident set size) for the run.
+\end{itemize}
