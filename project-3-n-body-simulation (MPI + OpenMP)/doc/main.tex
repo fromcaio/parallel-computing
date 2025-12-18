@@ -1,0 +1,234 @@
+%% Version: 2.0
+%%
+%% This template provides a clean, modern structure for academic articles
+%% with proper formatting, citations, and professional appearance.
+%% ===================================================================================
+
+\documentclass[12pt, a4paper]{article}
+
+%% ===================================================================================
+%% PACKAGE IMPORTS
+%% ===================================================================================
+
+% -----------------------------------------------------------------------------------
+% -- Font, Encoding, and Language
+% -----------------------------------------------------------------------------------
+\usepackage[T1]{fontenc}          % Use 8-bit T1 fonts
+\usepackage[utf8]{inputenc}       % Allow utf-8 input
+\usepackage[brazil,english]{babel} % Last language is the main one
+
+% -----------------------------------------------------------------------------------
+% -- Layout and Spacing
+% -----------------------------------------------------------------------------------
+\usepackage[
+    left=3cm,
+    right=2cm,
+    top=3cm,
+    bottom=2cm
+]{geometry}                       % Set page margins
+\usepackage{setspace}             % For line spacing control
+\usepackage{fancyhdr}             % For headers and footers
+\usepackage{titling}              % For better title control
+
+% -----------------------------------------------------------------------------------
+% -- Page Numbering Configuration
+% -----------------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}                        % Clear all header and footer fields
+\fancyhead[R]{\thepage}           % Page number on the top right
+\renewcommand{\headrulewidth}{0pt} % Remove header line
+\setlength{\headheight}{14.5pt}   % Fix fancyhdr warning
+
+% Redefine plain page style to match fancy (fixes first page numbering)
+\fancypagestyle{plain}{%
+    \fancyhf{}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+}
+
+% Reduce space before title
+\setlength{\droptitle}{-60pt}
+
+% -----------------------------------------------------------------------------------
+% -- Author Block and Affiliations
+% -----------------------------------------------------------------------------------
+\usepackage{authblk}              % To handle multiple authors and affiliations
+
+% -----------------------------------------------------------------------------------
+% -- Graphics, Tables, and Code Listings
+% -----------------------------------------------------------------------------------
+\usepackage{graphicx}             % For including images
+\usepackage{booktabs}             % For professional-quality tables
+\usepackage{xcolor}               % For defining and using colors
+\usepackage{listings}             % For code listings
+\usepackage{float}                % For [H] specifier in figures
+
+% -----------------------------------------------------------------------------------
+% -- Mathematics and Bibliography
+% -----------------------------------------------------------------------------------
+\usepackage{amsmath}              % For advanced math typesetting
+\usepackage[round,authoryear]{natbib} % Citation management
+
+% -----------------------------------------------------------------------------------
+% -- Hyperlinks, Appendices, and Section Titles
+% -----------------------------------------------------------------------------------
+\usepackage{hyperref}             % For clickable links and PDF metadata
+\usepackage[page]{appendix}       % For proper appendix handling (removed 'toc' option)
+\usepackage{titlesec}             % For customizing section titles
+%% ===================================================================================
+%% CUSTOM COMMANDS AND CONFIGURATIONS
+%% ===================================================================================
+
+% -----------------------------------------------------------------------------------
+% -- PDF Hyperlinks and Metadata
+% -----------------------------------------------------------------------------------
+\hypersetup{
+    pdftitle={Hybrid MPI + OpenMP Parallelization of the N-Body Problem: Design, Implementation, and Performance Analysis},
+    pdfauthor={Caio Reis},
+    colorlinks=true,
+    linkcolor=blue!50!black,
+    citecolor=green!50!black,
+    urlcolor=blue!80!black,
+    bookmarksopen=true,
+    bookmarksnumbered=true
+}
+% -----------------------------------------------------------------------------------
+% -- Section Title Formatting
+% -----------------------------------------------------------------------------------
+% Customize ALL section titles to be consistent and prevent awkward spacing.
+\titleformat{\section}[block]
+    {\normalfont\large\bfseries\raggedright} % Added \raggedright
+    {\thesection}                            % The section number (e.g., "A")
+    {1em}                                   % Space between number and title
+    {}
+
+% Also format starred sections (like \section*{Apêndices}) to match.
+\titleformat{name=\section,numberless}[block]
+    {\normalfont\large\bfseries\raggedright} % Added \raggedright
+    {}
+    {0em}
+    {}
+% -- Code Listing Style
+% -----------------------------------------------------------------------------------
+\lstset{
+    numbers=left,
+    numberstyle=\small\color{gray},
+    frame=leftline,
+    breaklines=true,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!40!black},
+    stringstyle=\color{purple},
+    showstringspaces=false,
+    tabsize=2,
+    captionpos=b
+}
+
+%% ===================================================================================
+%% ARTICLE METADATA
+%% ===================================================================================
+% [TODO: Fill in your article's information here]
+
+\title{Hybrid MPI + OpenMP Parallelization of the N-Body Problem: Design, Implementation, and Performance Analysis}
+\author[1]{Caio Reis}
+\affil[1]{Department of Computer Science, Federal University of São João del-Rei, Brazil}
+\date{\today} % Or specify a date, e.g., \date{October 12, 2025}
+
+%% ===================================================================================
+%% DOCUMENT START
+%% ===================================================================================
+\begin{document}
+
+\maketitle % Generates the title and author block
+
+% -----------------------------------------------------------------------------------
+% -- ABSTRACTS AND KEYWORDS
+% -----------------------------------------------------------------------------------
+\begin{abstract}
+    \noindent This work presents the design, implementation, and performance evaluation of a hybrid parallel solution for the classical N-Body problem, developed in C++ using the Message Passing Interface (MPI) and OpenMP. The N-Body problem models the gravitational interaction among $N$ particles and is characterized by an $O(N^2)$ computational complexity, making it a representative benchmark for high-performance computing. A sequential baseline is first implemented to validate correctness and identify computational bottlenecks. The parallel solution adopts a hybrid programming model in which MPI is used to distribute the particle set across processes, while OpenMP accelerates force computation loops within each process. Communication is handled through an all-to-all data exchange using \texttt{MPI\_Allgatherv}, allowing each process to access a consistent global snapshot of particle positions at every simulation step. Performance is evaluated through strong scaling experiments, comparing pure MPI, pure OpenMP, and hybrid configurations under fixed total core counts. The results demonstrate that MPI-based parallelism provides near-linear speedup for moderate process counts, while hybrid configurations offer competitive performance by reducing communication overhead at higher core counts. The study highlights key trade-offs between distributed and shared-memory parallelism and reinforces the effectiveness of hybrid approaches for computationally intensive scientific simulations.
+    \vspace{\baselineskip}
+    \noindent\textbf{Palavras-chave:} Parallel Computing; Hybrid Programming; MPI; OpenMP; N-Body Simulation; Performance Analysis.
+\end{abstract}
+
+% -----------------------------------------------------------------------------------
+% -- TABLE OF CONTENTS (Optional)
+% -----------------------------------------------------------------------------------
+% \tableofcontents % Uncomment this if you need a table of contents (for longer articles)
+% \onehalfspacing % Example of changing line spacing after the abstracts/TOC
+
+% -----------------------------------------------------------------------------------
+% -- MAIN BODY OF THE ARTICLE
+% -----------------------------------------------------------------------------------
+\section{Introduction}
+
+The N-Body problem is a fundamental computational challenge in scientific computing, arising in domains such as astrophysics, molecular dynamics, and plasma physics. It consists of computing the forces exerted among $N$ particles and updating their positions over time according to physical laws. The straightforward formulation requires evaluating all pairwise interactions, leading to an $O(N^2)$ computational complexity per simulation step. As the number of particles increases, the problem quickly becomes infeasible for sequential execution.
+
+Parallel computing offers a natural approach to addressing this limitation. By distributing the workload across multiple processing elements, it is possible to significantly reduce execution time and enable simulations with larger problem sizes. However, efficient parallelization of the N-Body problem presents challenges related to data distribution, communication overhead, and load balancing, particularly in distributed-memory environments.
+
+This work explores a hybrid parallel solution that combines two widely adopted parallel programming paradigms: MPI for distributed-memory parallelism and OpenMP for shared-memory parallelism. The hybrid approach aims to exploit both inter-node and intra-node parallelism, allowing the simulation to scale across multiple processes while efficiently utilizing multi-core architectures.
+
+The objectives of this project are threefold: (i) to design a modular and maintainable hybrid parallel architecture for the N-Body problem, (ii) to implement and validate the correctness of the solution through comparison with a sequential baseline, and (iii) to evaluate the performance of different parallel configurations through systematic benchmarking and scalability analysis.
+
+\section{Methodology}
+
+The simulation models the motion of particles in a two-dimensional space under mutual gravitational attraction. At each timestep, the force acting on a particle is computed by summing the contributions from all other particles according to Newton’s law of universal gravitation. Particle velocities and positions are then updated using the symplectic Euler integration method, which offers improved numerical stability over the standard explicit Euler scheme.
+
+A sequential version of the algorithm is first implemented to serve as a correctness reference and performance baseline. Profiling of the sequential execution confirms that the force computation dominates runtime, accounting for the vast majority of execution time.
+
+For the parallel solution, a hybrid programming model is adopted. The particle set is decomposed into contiguous blocks and distributed among MPI processes using a one-dimensional block decomposition strategy. Each process is responsible for updating a subset of particles, ensuring exclusive write access and avoiding race conditions.
+
+At the beginning of each timestep, all processes exchange their local particle data using \texttt{MPI\_Allgatherv}, creating a global snapshot of particle positions. This snapshot is used as read-only input during force computation. Within each process, the force calculation loop over local particles is parallelized using OpenMP with static scheduling, as each iteration performs an equivalent amount of work.
+
+Performance evaluation is conducted through strong scaling experiments, where the problem size is held constant while varying the number of MPI processes and OpenMP threads. Execution time is measured using high-resolution timers, excluding input and output operations to focus exclusively on computation and communication costs.
+
+\section{Development}
+
+The implementation is written in C++17 and organized into modular components to separate concerns and facilitate maintainability. Core data structures represent particles using aligned memory layouts to improve cache efficiency. A custom MPI datatype is defined to allow efficient transmission of particle structures while respecting alignment and padding constraints.
+
+The parallel execution flow consists of three main phases within each timestep: communication, computation, and integration. During the communication phase, MPI collectives are used to synchronize particle positions across processes. The computation phase performs the $O(N^2)$ force calculations, and the integration phase updates particle velocities and positions.
+
+OpenMP directives are applied exclusively to rank-local loops, ensuring that MPI communication is not interleaved with multithreaded regions. This separation simplifies reasoning about correctness and avoids undefined behavior. Static scheduling is employed due to the uniform workload associated with each particle interaction.
+
+Automation scripts are developed to execute standardized benchmark configurations, including sequential, pure MPI, pure OpenMP, and hybrid setups. These scripts generate timing data that is later analyzed using a dedicated post-processing workflow.
+
+\section{Results}\label{cap:results}
+
+Performance results are obtained for a fixed problem size of $N = 5000$ particles and a fixed number of simulation steps. Figure~\ref{fig:pure_mpi_speedup} shows the strong scaling behavior of the pure MPI implementation, illustrating near-linear speedup as the number of MPI processes increases up to ten ranks.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{imgs/01-pure-mpi-processes-vs-speedup-factor.png}
+	\caption{Speedup as a function of the number of MPI processes for the pure MPI configuration.}
+	\label{fig:pure_mpi_speedup}
+\end{figure}
+
+Figure~\ref{fig:pure_mpi_efficiency} presents the corresponding parallel efficiency, which gradually decreases as communication overhead becomes more significant at higher process counts.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{imgs/02-pure-mpi-parallel-efficiency.png}
+	\caption{Parallel efficiency of the pure MPI implementation.}
+	\label{fig:pure_mpi_efficiency}
+\end{figure}
+
+Hybrid configurations are evaluated by comparing execution times under fixed total core counts. Figure~\ref{fig:10cores} compares pure MPI, pure OpenMP, and hybrid configurations using ten total cores, while Figure~\ref{fig:4cores} presents the same comparison for four total cores.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{imgs/03-execution-time-comparison-10-total-cores.png}
+	\caption{Execution time comparison for different configurations using ten total cores.}
+	\label{fig:10cores}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{imgs/04-execution-time-comparison-4-total-cores.png}
+	\caption{Execution time comparison for different configurations using four total cores.}
+	\label{fig:4cores}
+\end{figure}
+
+The numerical results show that pure MPI achieves the highest performance for the tested configurations, while hybrid approaches offer competitive performance by reducing the number of MPI processes involved in collective communication. Pure OpenMP configurations perform adequately at low core counts but exhibit limited scalability due to memory bandwidth constraints.
+
+Overall, the results confirm that hybrid MPI + OpenMP parallelization provides a flexible and effective strategy for the N-Body problem, balancing communication and computation costs on modern multi-core systems.
+
+\end{document}
